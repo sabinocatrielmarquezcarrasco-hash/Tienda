@@ -20,7 +20,6 @@ def categorizar_real(desc):
     else: return 'HOGAR Y VARIEDADES'
 
 def procesar_catalogo():
-    # 1. Leer el archivo XLS (que es HTML estructurado)
     if not os.path.exists('archivo.xls'):
         print("❌ Error: No se encontró 'archivo.xls' en esta carpeta.")
         return False
@@ -36,8 +35,6 @@ def procesar_catalogo():
         if cells: parsed_rows.append(cells)
 
     clean_products = []
-    
-    # Margen de ganancia ajustable (Ej: 1.35 es un 35% de recargo)
     MARGEN_GANANCIA = 1.35 
 
     for r in parsed_rows:
@@ -49,14 +46,12 @@ def procesar_catalogo():
             
             if cod != 'Codigo' and desc != 'Descripcion' and cod != '':
                 try:
-                    # Multiplicamos por tu margen y redondeamos a entero
                     precio_final = int(float(precio_raw) * MARGEN_GANANCIA)
                 except:
                     precio_final = 0
                 
                 cat = categorizar_real(desc)
                 
-                # Asignar imagen placeholder según categoría
                 img = "https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=300&q=80"
                 if cat == 'PARLANTES Y MICROFONOS': img = "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=300&q=80"
                 elif cat == 'AURICULARES VINCHA O BT': img = "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=300&q=80"
@@ -73,18 +68,17 @@ def procesar_catalogo():
                     "image": img
                 })
 
-    # Guardar base de datos para JavaScript
+    # CORRECCIÓN AQUÍ: Se inyecta directo en la ventana global del navegador
     with open('productos.js', 'w', encoding='utf-8') as f:
-        f.write("const PRODUCTOS_DATA = " + json.dumps(clean_products, indent=4, ensure_ascii=False) + ";")
+        f.write("window.PRODUCTOS_DATA = " + json.dumps(clean_products, indent=4, ensure_ascii=False) + ";")
     
-    print(f"✅ ¡Éxito! Se procesaron {len(clean_products)} productos con tu margen aplicado.")
+    print(f"✅ ¡Éxito! Se procesaron {len(clean_products)} productos.")
     return True
 
 if __name__ == "__main__":
     if procesar_catalogo():
-        # Automatizar el push a GitHub desde Python
         print("🚀 Subiendo actualizaciones automáticas a tu GitHub Pages...")
         os.system('git add archivo.xls productos.js')
-        os.system('git commit -m "Actualización automática de stock y precios"')
+        os.system('git commit -m "Actualización de stock global inyectado"')
         os.system('git push origin main')
-        print("✨ ¡Todo listo! En 2 minutos impacta en tu link de GitHub Pages.")
+        print("✨ ¡Todo listo! Sincronizado.")
