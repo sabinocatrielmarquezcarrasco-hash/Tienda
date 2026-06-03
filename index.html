@@ -10,7 +10,7 @@
             --dark: #0d0e15;
             --card-bg: #181a26;
             --text: #ffffff;
-            --admin-color: #ff0055;
+            --accent: #25d366;
         }
 
         * {
@@ -23,12 +23,12 @@
         body {
             background-color: var(--dark);
             color: var(--text);
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
         header {
             background: linear-gradient(135deg, #1e2235, #0d0e15);
-            padding: 20px;
+            padding: 25px 20px;
             text-align: center;
             border-bottom: 2px solid var(--primary);
         }
@@ -41,13 +41,17 @@
 
         .search-box {
             width: 100%;
-            padding: 12px 20px;
+            padding: 14px 20px;
             background-color: var(--card-bg);
             border: 1px solid #333;
             color: white;
             border-radius: 8px;
             margin-bottom: 20px;
             font-size: 16px;
+            outline: none;
+        }
+        .search-box:focus {
+            border-color: var(--primary);
         }
 
         .categories {
@@ -56,6 +60,13 @@
             overflow-x: auto;
             padding-bottom: 10px;
             margin-bottom: 20px;
+        }
+        .categories::-webkit-scrollbar {
+            height: 5px;
+        }
+        .categories::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 10px;
         }
 
         .category-btn {
@@ -66,18 +77,20 @@
             border-radius: 20px;
             cursor: pointer;
             white-space: nowrap;
+            transition: all 0.3s;
         }
 
         .category-btn.active {
             background-color: var(--primary);
             color: var(--dark);
             font-weight: bold;
+            border-color: var(--primary);
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 25px;
         }
 
         .card {
@@ -87,13 +100,35 @@
             border: 1px solid #222;
             display: flex;
             flex-direction: column;
+            position: relative;
+            transition: transform 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
         }
 
-        .card-img {
+        /* Contenedor del "GIF" Animado o Transición Automática */
+        .image-container {
             width: 100%;
-            height: 180px;
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            background-color: #111;
+        }
+
+        .gif-frame {
+            width: 100%;
+            height: 100%;
             object-fit: cover;
-            background-color: #222;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+        }
+
+        .gif-frame.active {
+            opacity: 1;
         }
 
         .card-content {
@@ -104,24 +139,50 @@
         }
 
         .card-title {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             margin-bottom: 10px;
-            height: 40px;
+            height: 42px;
             overflow: hidden;
+            line-height: 1.4;
         }
 
         .card-price {
-            font-size: 20px;
+            font-size: 22px;
             color: var(--primary);
             font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        /* Selector de Variantes de Color / Factor de Venta */
+        .variant-section {
+            margin-bottom: 15px;
+        }
+        .variant-label {
+            font-size: 11px;
+            color: #888;
+            text-transform: uppercase;
             margin-bottom: 5px;
+            display: block;
+        }
+        .variant-select {
+            width: 100%;
+            background-color: #25283b;
+            color: white;
+            border: 1px solid #444;
+            padding: 6px;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
         }
 
         .card-pack {
             font-size: 12px;
             color: #aaa;
             margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
         }
 
         .qty-controls {
@@ -129,17 +190,22 @@
             align-items: center;
             justify-content: space-between;
             margin-top: auto;
+            gap: 10px;
         }
 
         .qty-btn {
             background-color: #2c2f48;
             color: white;
             border: none;
-            width: 35px;
-            height: 35px;
+            width: 38px;
+            height: 38px;
             border-radius: 8px;
             cursor: pointer;
-            font-size: 18px;
+            font-size: 20px;
+            transition: background 0.2s;
+        }
+        .qty-btn:hover {
+            background-color: #3d4266;
         }
 
         .qty-input {
@@ -158,23 +224,34 @@
             left: 0;
             width: 100%;
             background-color: #1e2235;
-            padding: 15px;
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-top: 2px solid var(--primary);
             z-index: 100;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
+        }
+
+        #cart-summary {
+            font-size: 16px;
+            font-weight: 500;
         }
 
         .checkout-btn {
-            background-color: #25d366;
+            background-color: var(--accent);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 12px 28px;
             border-radius: 8px;
             font-weight: bold;
             font-size: 16px;
             cursor: pointer;
+            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
+            transition: transform 0.2s;
+        }
+        .checkout-btn:hover {
+            transform: scale(1.03);
         }
     </style>
 </head>
@@ -182,30 +259,29 @@
 
     <header>
         <h1>Tu Kompa</h1>
-        <p style="color: var(--primary);">Catálogo Mayorista Tech & Bazar</p>
+        <p style="color: var(--primary); margin-top: 5px; font-size: 14px; letter-spacing: 1px;">DISTRIBUIDORA MAYORISTA</p>
     </header>
 
     <div class="container">
-        <input type="text" class="search-box" id="search" placeholder="Buscar productos por nombre o código..." oninput="filtrarProductos()">
+        <input type="text" class="search-box" id="search" placeholder="Buscar por palabra clave o código de artículo..." oninput="filtrarProductos()">
         
-        <div class="categories" id="categories-container">
-            </div>
+        <div class="categories" id="categories-container"></div>
 
-        <div class="grid" id="grid-productos">
-            </div>
+        <div class="grid" id="grid-productos"></div>
     </div>
 
     <div class="footer-cart">
         <div>
             <p id="cart-summary">Items: 0 | Total: $0</p>
         </div>
-        <button class="checkout-btn" onclick="enviarPedidoWhatsApp()">Enviar Pedido por WhatsApp</button>
+        <button class="checkout-btn" onclick="enviarPedidoWhatsApp()">Confirmar Pedido (WhatsApp)</button>
     </div>
 
     <script src="productos.js"></script>
     <script>
         let carrito = {};
         let categoriaSeleccionada = 'TODOS';
+        let intervals = []; // Guardar intervalos de los "GIFs" animaciones
 
         function inicializarCategorias() {
             const categorias = ['TODOS', ...new Set(PRODUCTOS_DATA.map(p => p.category))];
@@ -223,21 +299,58 @@
         }
 
         function renderizarProductos(lista) {
+            // Limpiar intervalos de animación anteriores
+            intervals.forEach(clearInterval);
+            intervals = [];
+
             const grid = document.getElementById('grid-productos');
             if (lista.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 20px; color:#aaa;">No se encontraron productos.</p>';
+                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 40px; color:#aaa;">No hay artículos que coincidan con la búsqueda.</p>';
                 return;
             }
 
             grid.innerHTML = lista.map(p => {
-                const qty = carrito[p.id] ? carrito[p.id].cantidad : 0;
+                // Si el producto no tiene un array de imágenes, creamos uno por defecto simulando el cambio
+                const imagenes = (p.images && p.images.length > 0) ? p.images : [p.image, p.image];
+                
+                // Si el producto no tiene variantes por defecto, creamos opciones básicas de venta
+                const variantes = p.variants || ["Predeterminado", "Unidad Alternativa"];
+
+                const uniqueCartKey = p.id;
+                const qty = carrito[uniqueCartKey] ? carrito[uniqueCartKey].cantidad : 0;
+                const selectedVar = carrito[uniqueCartKey] ? carrito[uniqueCartKey].variante : variantes[0];
+
+                // Generar el marcado de imágenes para el efecto GIF
+                const imagesHtml = imagenes.map((imgUrl, index) => 
+                    `<img src="${imgUrl}" class="gif-frame ${index === 0 ? 'active' : ''}" data-prod="${p.id}" data-index="${index}" alt="${p.name}">`
+                ).join('');
+
+                // Generar opciones del selector de factor de venta
+                const optionsHtml = variantes.map(v => 
+                    `<option value="${v}" ${v === selectedVar ? 'selected' : ''}>${v}</option>`
+                ).join('');
+
                 return `
-                    <div class="card">
-                        <img src="${p.image}" class="card-img" alt="${p.name}">
+                    <div class="card" id="card-${p.id}">
+                        <div class="image-container">
+                            ${imagesHtml}
+                        </div>
                         <div class="card-content">
-                            <div class="card-title">[${p.id}] ${p.name}</div>
+                            <div class="card-title"><strong>[${p.id}]</strong> ${p.name}</div>
                             <div class="card-price">$${p.price.toLocaleString('es-AR')}</div>
-                            <div class="card-pack">Bulto Cerrado: X${p.pack} u.</div>
+                            
+                            <div class="variant-section">
+                                <label class="variant-label">Color / Factor de Venta:</label>
+                                <select class="variant-select" onchange="actualizarVariante('${p.id}', this.value)">
+                                    ${optionsHtml}
+                                </select>
+                            </div>
+
+                            <div class="card-pack">
+                                <span>Bulto: X${p.pack} u.</span>
+                                <span style="color: var(--primary)">Cat: ${p.category}</span>
+                            </div>
+                            
                             <div class="qty-controls">
                                 <button class="qty-btn" onclick="modificarCantidad('${p.id}', -1)">-</button>
                                 <input type="text" class="qty-input" id="qty-${p.id}" value="${qty}" readonly>
@@ -247,12 +360,45 @@
                     </div>
                 `;
             }).join('');
+
+            // Iniciar la animación automática tipo GIF para las imágenes
+            iniciarEfectoGif();
+        }
+
+        // Función que alterna las imágenes simulando un GIF de producto dinámico
+        function iniciarEfectoGif() {
+            const containers = document.querySelectorAll('.image-container');
+            containers.forEach(container => {
+                const frames = container.querySelectorAll('.gif-frame');
+                if (frames.length > 1) {
+                    let currentFrame = 0;
+                    const intervalId = setInterval(() => {
+                        frames[currentFrame].classList.remove('active');
+                        currentFrame = (currentFrame + 1) % frames.length;
+                        frames[currentFrame].classList.add('active');
+                    }, 2200); // Cambia de cuadro cada 2.2 segundos de forma fluida
+                    intervals.push(intervalId);
+                }
+            });
+        }
+
+        function actualizarVariante(id, valor) {
+            if (carrito[id]) {
+                carrito[id].variante = valor;
+            } else {
+                const prod = PRODUCTOS_DATA.find(p => p.id === id);
+                carrito[id] = { name: prod.name, precio: prod.price, cantidad: 0, variante: valor };
+            }
+            actualizarResumenFooter();
         }
 
         function modificarCantidad(id, cambio) {
             const prod = PRODUCTOS_DATA.find(p => p.id === id);
+            const selectElement = document.querySelector(`#card-${id} .variant-select`);
+            const varianteActiva = selectElement ? selectElement.value : "Predeterminado";
+
             if (!carrito[id]) {
-                carrito[id] = { name: prod.name, precio: prod.price, cantidad: 0 };
+                carrito[id] = { name: prod.name, precio: prod.price, cantidad: 0, variante: varianteActiva };
             }
 
             carrito[id].cantidad += cambio;
@@ -290,7 +436,7 @@
         function enviarPedidoWhatsApp() {
             const keys = Object.keys(carrito);
             if (keys.length === 0) {
-                alert("El carrito está vacío.");
+                alert("Por favor, agrega al menos un artículo al carrito.");
                 return;
             }
 
@@ -301,12 +447,12 @@
                 let item = carrito[id];
                 let sub = item.precio * item.cantidad;
                 total += sub;
-                mensaje += `• *${item.name}*\n  Cantidad: ${item.cantidad} u. | Subtotal: $${sub.toLocaleString('es-AR')}\n  _Ref: ${id}_\n\n`;
+                mensaje += `• *[${id}] ${item.name}*\n  Opcion/Color: _${item.variante}_\n  Cantidad: ${item.cantidad} u. | Subtotal: $${sub.toLocaleString('es-AR')}\n\n`;
             });
 
-            mensaje += `💰 *TOTAL ESTIMADO A PAGAR: $${Math.round(total).toLocaleString('es-AR')}*`;
+            mensaje += `💰 *TOTAL ESTIMADO: $${Math.round(total).toLocaleString('es-AR')}*`;
             
-            const nroTelefono = "5492664000000"; // Reemplaza por tu número comercial real
+            const nroTelefono = "5492664000000"; // Tu número de atención comercial
             window.open(`https://api.whatsapp.com/send?phone=${nroTelefono}&text=${encodeURIComponent(mensaje)}`, '_blank');
         }
 
@@ -315,7 +461,7 @@
                 inicializarCategorias();
                 renderizarProductos(PRODUCTOS_DATA);
             } else {
-                document.getElementById('grid-productos').innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:red;">Error: No se encontró el archivo de datos de productos.</p>';
+                document.getElementById('grid-productos').innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:red;">Error crítico: No se encontró la base de datos de productos.</p>';
             }
         };
     </script>
