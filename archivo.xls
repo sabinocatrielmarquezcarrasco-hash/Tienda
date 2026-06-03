@@ -1,0 +1,7 @@
+# 1. Correr el script de Python para que te fabrique el 'productos.js' localmente
+python sincronizar.py
+
+# 2. Subir los archivos generados a GitHub de forma manual si falló el push automático
+git add productos.js archivo.xls
+git commit -m "Añadir base de datos de productos"
+git push origin main
