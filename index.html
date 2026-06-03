@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tu Kompa - Mayorista Tech & Bazar</title>
+    <title>Catálogo Impotekno - Mejorado</title>
     <style>
+        /* --- ESTILOS GENERALES Y VARIABLES --- */
         :root {
-            --primary: #00f0ff;
-            --dark: #0d0e15;
-            --card-bg: #181a26;
-            --text: #ffffff;
-            --accent: #25d366;
+            --primary-color: #0b4f8a;
+            --secondary-color: #1a73e8;
+            --accent-color: #d93025;
+            --bg-light: #f8f9fa;
+            --text-dark: #202124;
+            --border-color: #dadce0;
         }
 
         * {
@@ -21,449 +23,289 @@
         }
 
         body {
-            background-color: var(--dark);
-            color: var(--text);
-            padding-bottom: 90px;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
         }
 
+        /* --- HEADER Y NAVEGACIÓN --- */
         header {
-            background: linear-gradient(135deg, #1e2235, #0d0e15);
-            padding: 25px 20px;
-            text-align: center;
-            border-bottom: 2px solid var(--primary);
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .container {
+        .header-container {
             max-width: 1200px;
-            margin: 20px auto;
-            padding: 0 15px;
+            margin: 0 auto;
+            padding: 15px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .header-container {
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+            }
+        }
+
+        .logo {
+            font-weight: 800;
+            font-size: 24px;
+            color: var(--primary-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .search-box {
-            width: 100%;
-            padding: 14px 20px;
-            background-color: var(--card-bg);
-            border: 1px solid #333;
-            color: white;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 16px;
-            outline: none;
-        }
-        .search-box:focus {
-            border-color: var(--primary);
-        }
-
-        .categories {
             display: flex;
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-        .categories::-webkit-scrollbar {
-            height: 5px;
-        }
-        .categories::-webkit-scrollbar-thumb {
-            background: #333;
-            border-radius: 10px;
-        }
-
-        .category-btn {
-            background-color: var(--card-bg);
-            color: white;
-            border: 1px solid #333;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.3s;
-        }
-
-        .category-btn.active {
-            background-color: var(--primary);
-            color: var(--dark);
-            font-weight: bold;
-            border-color: var(--primary);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 25px;
-        }
-
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #222;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            transition: transform 0.3s;
-        }
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        /* Contenedor del "GIF" Animado o Transición Automática */
-        .image-container {
-            width: 100%;
-            height: 200px;
-            position: relative;
-            overflow: hidden;
-            background-color: #111;
-        }
-
-        .gif-frame {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            transition: opacity 0.8s ease-in-out;
-        }
-
-        .gif-frame.active {
-            opacity: 1;
-        }
-
-        .card-content {
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
             flex-grow: 1;
-        }
-
-        .card-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            height: 42px;
-            overflow: hidden;
-            line-height: 1.4;
-        }
-
-        .card-price {
-            font-size: 22px;
-            color: var(--primary);
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        /* Selector de Variantes de Color / Factor de Venta */
-        .variant-section {
-            margin-bottom: 15px;
-        }
-        .variant-label {
-            font-size: 11px;
-            color: #888;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            display: block;
-        }
-        .variant-select {
+            max-width: 500px;
+            margin: 0 auto;
             width: 100%;
-            background-color: #25283b;
-            color: white;
-            border: 1px solid #444;
-            padding: 6px;
-            border-radius: 6px;
-            font-size: 13px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px 0 0 4px;
             outline: none;
-            cursor: pointer;
+            font-size: 14px;
         }
 
-        .card-pack {
-            font-size: 12px;
-            color: #aaa;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .qty-controls {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: auto;
-            gap: 10px;
-        }
-
-        .qty-btn {
-            background-color: #2c2f48;
+        .search-box button {
+            background-color: var(--primary-color);
             color: white;
             border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 8px;
+            padding: 0 20px;
+            border-radius: 0 4px 4px 0;
             cursor: pointer;
-            font-size: 20px;
             transition: background 0.2s;
         }
-        .qty-btn:hover {
-            background-color: #3d4266;
+
+        .search-box button:hover {
+            background-color: var(--secondary-color);
         }
 
-        .qty-input {
-            width: 50px;
-            text-align: center;
-            background: transparent;
-            border: none;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
+        /* --- CATEGORÍAS RÁPIDAS --- */
+        .categories-nav {
+            background: var(--primary-color);
+            padding: 10px 0;
         }
 
-        .footer-cart {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #1e2235;
-            padding: 15px 20px;
+        .nav-links {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
             display: flex;
-            justify-content: space-between;
+            gap: 15px;
+            list-style: none;
+            overflow-x: auto;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- CONTENEDOR PRINCIPAL Y PRODUCTO --- */
+        main {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .product-detail-card {
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            padding: 25px;
+        }
+
+        @media (min-width: 768px) {
+            .product-detail-card {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Galería de imágenes simulada */
+        .product-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
             align-items: center;
-            border-top: 2px solid var(--primary);
-            z-index: 100;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.5);
         }
 
-        #cart-summary {
-            font-size: 16px;
-            font-weight: 500;
+        .main-image {
+            max-width: 100%;
+            height: 300px;
+            object-fit: contain;
+            background: #fcfcfc;
+            border: 1px solid #f0f0f0;
+            border-radius: 4px;
+            padding: 10px;
         }
 
-        .checkout-btn {
-            background-color: var(--accent);
+        /* Info del Producto */
+        .product-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .product-title {
+            font-size: 24px;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+            border-bottom: 2px solid var(--bg-light);
+            padding-bottom: 10px;
+        }
+
+        .product-meta {
+            font-size: 14px;
+            color: #5f6368;
+            margin-bottom: 20px;
+        }
+
+        .product-meta span {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .price-tag {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        /* Formulario de comentarios/pedido mejorado */
+        .order-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .order-form label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #5f6368;
+        }
+
+        .order-form textarea {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            resize: none;
+            outline: none;
+            font-size: 14px;
+        }
+
+        .order-form textarea:focus {
+            border-color: var(--secondary-color);
+        }
+
+        .btn-submit {
+            background-color: var(--secondary-color);
             color: white;
             border: none;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 12px;
             font-size: 16px;
+            font-weight: 600;
+            border-radius: 4px;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(37, 211, 102, 0.3);
-            transition: transform 0.2s;
+            transition: background 0.2s;
         }
-        .checkout-btn:hover {
-            transform: scale(1.03);
+
+        .btn-submit:hover {
+            background-color: var(--primary-color);
         }
     </style>
 </head>
 <body>
 
+    <!-- Encabezado con Logo y Buscador -->
     <header>
-        <h1>Tu Kompa</h1>
-        <p style="color: var(--primary); margin-top: 5px; font-size: 14px; letter-spacing: 1px;">DISTRIBUIDORA MAYORISTA</p>
+        <div class="header-container">
+            <div class="logo">
+                <span>▲</span> Impotekno
+            </div>
+            <div class="search-box">
+                <input type="text" placeholder="Buscar productos, marcas y más...">
+                <button type="button">Buscar</button>
+            </div>
+        </div>
     </header>
 
-    <div class="container">
-        <input type="text" class="search-box" id="search" placeholder="Buscar por palabra clave o código de artículo..." oninput="filtrarProductos()">
-        
-        <div class="categories" id="categories-container"></div>
+    <!-- Barra de Navegación / Filtros rápidos -->
+    <nav class="categories-nav">
+        <ul class="nav-links">
+            <li><a href="#" class="active">General</a></li>
+            <li><a href="#">Excel</a></li>
+            <li><a href="#">Agotados</a></li>
+            <li><a href="#">Novedades</a></li>
+        </ul>
+    </nav>
 
-        <div class="grid" id="grid-productos"></div>
-    </div>
-
-    <div class="footer-cart">
-        <div>
-            <p id="cart-summary">Items: 0 | Total: $0</p>
-        </div>
-        <button class="checkout-btn" onclick="enviarPedidoWhatsApp()">Confirmar Pedido (WhatsApp)</button>
-    </div>
-
-    <script src="productos.js"></script>
-    <script>
-        let carrito = {};
-        let categoriaSeleccionada = 'TODOS';
-        let intervals = []; // Guardar intervalos de los "GIFs" animaciones
-
-        function inicializarCategorias() {
-            const categorias = ['TODOS', ...new Set(PRODUCTOS_DATA.map(p => p.category))];
-            const container = document.getElementById('categories-container');
-            container.innerHTML = categorias.map(cat => 
-                `<button class="category-btn ${cat === 'TODOS' ? 'active' : ''}" onclick="cambiarCategoria('${cat}', this)">${cat}</button>`
-            ).join('');
-        }
-
-        function cambiarCategoria(cat, btn) {
-            document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            categoriaSeleccionada = cat;
-            filtrarProductos();
-        }
-
-        function renderizarProductos(lista) {
-            // Limpiar intervalos de animación anteriores
-            intervals.forEach(clearInterval);
-            intervals = [];
-
-            const grid = document.getElementById('grid-productos');
-            if (lista.length === 0) {
-                grid.innerHTML = '<p style="grid-column: 1/-1; text-align:center; padding: 40px; color:#aaa;">No hay artículos que coincidan con la búsqueda.</p>';
-                return;
-            }
-
-            grid.innerHTML = lista.map(p => {
-                // Si el producto no tiene un array de imágenes, creamos uno por defecto simulando el cambio
-                const imagenes = (p.images && p.images.length > 0) ? p.images : [p.image, p.image];
-                
-                // Si el producto no tiene variantes por defecto, creamos opciones básicas de venta
-                const variantes = p.variants || ["Predeterminado", "Unidad Alternativa"];
-
-                const uniqueCartKey = p.id;
-                const qty = carrito[uniqueCartKey] ? carrito[uniqueCartKey].cantidad : 0;
-                const selectedVar = carrito[uniqueCartKey] ? carrito[uniqueCartKey].variante : variantes[0];
-
-                // Generar el marcado de imágenes para el efecto GIF
-                const imagesHtml = imagenes.map((imgUrl, index) => 
-                    `<img src="${imgUrl}" class="gif-frame ${index === 0 ? 'active' : ''}" data-prod="${p.id}" data-index="${index}" alt="${p.name}">`
-                ).join('');
-
-                // Generar opciones del selector de factor de venta
-                const optionsHtml = variantes.map(v => 
-                    `<option value="${v}" ${v === selectedVar ? 'selected' : ''}>${v}</option>`
-                ).join('');
-
-                return `
-                    <div class="card" id="card-${p.id}">
-                        <div class="image-container">
-                            ${imagesHtml}
-                        </div>
-                        <div class="card-content">
-                            <div class="card-title"><strong>[${p.id}]</strong> ${p.name}</div>
-                            <div class="card-price">$${p.price.toLocaleString('es-AR')}</div>
-                            
-                            <div class="variant-section">
-                                <label class="variant-label">Color / Factor de Venta:</label>
-                                <select class="variant-select" onchange="actualizarVariante('${p.id}', this.value)">
-                                    ${optionsHtml}
-                                </select>
-                            </div>
-
-                            <div class="card-pack">
-                                <span>Bulto: X${p.pack} u.</span>
-                                <span style="color: var(--primary)">Cat: ${p.category}</span>
-                            </div>
-                            
-                            <div class="qty-controls">
-                                <button class="qty-btn" onclick="modificarCantidad('${p.id}', -1)">-</button>
-                                <input type="text" class="qty-input" id="qty-${p.id}" value="${qty}" readonly>
-                                <button class="qty-btn" onclick="modificarCantidad('${p.id}', 1)">+</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-
-            // Iniciar la animación automática tipo GIF para las imágenes
-            iniciarEfectoGif();
-        }
-
-        // Función que alterna las imágenes simulando un GIF de producto dinámico
-        function iniciarEfectoGif() {
-            const containers = document.querySelectorAll('.image-container');
-            containers.forEach(container => {
-                const frames = container.querySelectorAll('.gif-frame');
-                if (frames.length > 1) {
-                    let currentFrame = 0;
-                    const intervalId = setInterval(() => {
-                        frames[currentFrame].classList.remove('active');
-                        currentFrame = (currentFrame + 1) % frames.length;
-                        frames[currentFrame].classList.add('active');
-                    }, 2200); // Cambia de cuadro cada 2.2 segundos de forma fluida
-                    intervals.push(intervalId);
-                }
-            });
-        }
-
-        function actualizarVariante(id, valor) {
-            if (carrito[id]) {
-                carrito[id].variante = valor;
-            } else {
-                const prod = PRODUCTOS_DATA.find(p => p.id === id);
-                carrito[id] = { name: prod.name, precio: prod.price, cantidad: 0, variante: valor };
-            }
-            actualizarResumenFooter();
-        }
-
-        function modificarCantidad(id, cambio) {
-            const prod = PRODUCTOS_DATA.find(p => p.id === id);
-            const selectElement = document.querySelector(`#card-${id} .variant-select`);
-            const varianteActiva = selectElement ? selectElement.value : "Predeterminado";
-
-            if (!carrito[id]) {
-                carrito[id] = { name: prod.name, precio: prod.price, cantidad: 0, variante: varianteActiva };
-            }
-
-            carrito[id].cantidad += cambio;
-
-            if (carrito[id].cantidad <= 0) {
-                delete carrito[id];
-                if(document.getElementById(`qty-${id}`)) document.getElementById(`qty-${id}`).value = 0;
-            } else {
-                if(document.getElementById(`qty-${id}`)) document.getElementById(`qty-${id}`).value = carrito[id].cantidad;
-            }
-
-            actualizarResumenFooter();
-        }
-
-        function filtrarProductos() {
-            const query = document.getElementById('search').value.toLowerCase();
-            const filtrados = PRODUCTOS_DATA.filter(p => {
-                const cumpleFiltro = (categoriaSeleccionada === 'TODOS' || p.category === categoriaSeleccionada);
-                const cumpleBusqueda = p.name.toLowerCase().includes(query) || p.id.toLowerCase().includes(query);
-                return cumpleFiltro && cumpleBusqueda;
-            });
-            renderizarProductos(filtrados);
-        }
-
-        function actualizarResumenFooter() {
-            let totalItems = 0;
-            let totalDinero = 0;
-            Object.keys(carrito).forEach(id => {
-                totalItems += carrito[id].cantidad;
-                totalDinero += carrito[id].precio * carrito[id].cantidad;
-            });
-            document.getElementById('cart-summary').innerText = `Items: ${totalItems} | Total: $${totalDinero.toLocaleString('es-AR')}`;
-        }
-
-        function enviarPedidoWhatsApp() {
-            const keys = Object.keys(carrito);
-            if (keys.length === 0) {
-                alert("Por favor, agrega al menos un artículo al carrito.");
-                return;
-            }
-
-            let mensaje = "🛒 *NUEVO PEDIDO MAYORISTA - TU KOMPA*\n\n";
-            let total = 0;
-
-            keys.forEach(id => {
-                let item = carrito[id];
-                let sub = item.precio * item.cantidad;
-                total += sub;
-                mensaje += `• *[${id}] ${item.name}*\n  Opcion/Color: _${item.variante}_\n  Cantidad: ${item.cantidad} u. | Subtotal: $${sub.toLocaleString('es-AR')}\n\n`;
-            });
-
-            mensaje += `💰 *TOTAL ESTIMADO: $${Math.round(total).toLocaleString('es-AR')}*`;
+    <!-- Sección Principal del Catálogo -->
+    <main>
+        <article class="product-detail-card">
             
-            const nroTelefono = "5492664000000"; // Tu número de atención comercial
-            window.open(`https://api.whatsapp.com/send?phone=${nroTelefono}&text=${encodeURIComponent(mensaje)}`, '_blank');
-        }
+            <!-- Zona Izquierda: Imagen del producto -->
+            <div class="product-gallery">
+                <!-- Reemplazar 'handy.jpg' por la ruta real de tu imagen en producción -->
+                <img src="https://via.placeholder.com/300x300?text=HANDY+BAOFENG" alt="Handy X 2 Baofeng 5W" class="main-image">
+            </div>
 
-        window.onload = () => {
-            if (typeof PRODUCTOS_DATA !== 'undefined') {
-                inicializarCategorias();
-                renderizarProductos(PRODUCTOS_DATA);
-            } else {
-                document.getElementById('grid-productos').innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:red;">Error crítico: No se encontró la base de datos de productos.</p>';
-            }
-        };
-    </script>
+            <!-- Zona Derecha: Detalles, Precio y Acción -->
+            <div class="product-info">
+                <h1 class="product-title">HANDY X 2 BAOFENG 5W</h1>
+                
+                <div class="product-meta">
+                    <span><strong>Código:</strong> BF-888S</span>
+                    <span><strong>Rubro:</strong> VARIEDADES (1 de 403)</span>
+                    <span><strong>Cantidad por bulto:</strong> 50 unidades</span>
+                </div>
+
+                <div class="price-tag">$ 24.100</div>
+
+                <!-- Formulario limpio en reemplazo del cuadro gris básico -->
+                <form class="order-form" action="#" method="POST">
+                    <div>
+                        <label for="comentarios">Notas o comentarios sobre el pedido:</label>
+                        <textarea id="comentarios" placeholder="Escribe aquí solo letras, no cantidades..."></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit">Añadir al Pedido</button>
+                </form>
+            </div>
+
+        </article>
+    </main>
+
 </body>
 </html>
