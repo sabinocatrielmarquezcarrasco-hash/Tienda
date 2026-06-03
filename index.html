@@ -3,441 +3,493 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pulse Tech | Catálogo Interactivo</title>
+    <title>Tu Kompa - Mayorista Tech & Bazar</title>
     <style>
-        /* Estilos Base - Modo Oscuro Premium */
-        body {
-            background-color: #0d0e12;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        :root {
+            --primary: #00f0ff;
+            --dark: #0d0e15;
+            --card-bg: #181a26;
+            --text: #ffffff;
+            --admin-color: #ff0055;
+        }
+
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            padding-bottom: 80px;
         }
 
         header {
+            background: linear-gradient(135deg, #1e2235, #0d0e15);
+            padding: 20px;
             text-align: center;
-            padding: 30px 15px;
-            background: linear-gradient(180deg, #1a1c23 0%, #0d0e12 100%);
-            border-bottom: 2px solid #00ff66;
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+            border-bottom: 2px solid var(--primary);
         }
 
-        header h1 {
-            margin: 0;
-            font-size: 28px;
-            letter-spacing: 2px;
-            color: #fff;
-            text-shadow: 0 0 10px #00ff66;
+        header.admin-header {
+            border-bottom: 2px solid var(--admin-color);
         }
 
-        header p {
-            color: #a0aec0;
-            margin: 5px 0 0 0;
-            font-size: 14px;
+        .admin-badge {
+            background-color: var(--admin-color);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            display: inline-block;
+            margin-top: 5px;
+            font-weight: bold;
         }
 
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px 15px 120px 15px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
         }
 
-        /* Banner de Alerta / Descuento */
-        .ticker-discount {
-            background: linear-gradient(90deg, #ff007f, #7928ca);
-            color: white;
-            text-align: center;
-            padding: 8px;
-            font-weight: bold;
-            font-size: 13px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            box-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
-            display: none; /* Se activa al ganar en la ruleta */
-            animation: pulse 1.5s infinite;
-        }
-
-        /* Pop-up de la Ruleta */
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(5, 5, 8, 0.95);
-            z-index: 1000;
+        /* Buscador y Filtros */
+        .controls-wrapper {
             display: flex;
-            justify-content: center;
-            align-items: center;
             flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        .ruleta-container {
-            position: relative;
-            width: 300px;
-            height: 300px;
-            margin-bottom: 30px;
-        }
-
-        .wheel {
+        .search-bar, .category-select {
             width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            border: 8px solid #1a1c23;
-            box-shadow: 0 0 30px #00f0ff;
-            background: conic-gradient(
-                #ff007f 0deg 90deg, 
-                #7928ca 90deg 180deg, 
-                #00f0ff 180deg 270deg, 
-                #00ff66 270deg 360deg
-            );
-            transition: transform 4s cubic-bezier(0.1, 1, 0.1, 1);
+            padding: 12px;
+            background-color: var(--card-bg);
+            border: 1px solid #333;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
         }
 
-        .pointer {
-            position: absolute;
-            top: -15px; left: 50%;
-            transform: translateX(-50%);
-            width: 0; height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 25px solid #fff;
-            filter: drop-shadow(0 0 5px #00f0ff);
-            z-index: 10;
+        .search-bar:focus, .category-select:focus {
+            border-color: var(--primary);
+            outline: none;
         }
 
-        .btn-spin {
-            background: #fff;
-            color: #0d0e12;
+        /* Ruleta de Premios */
+        .ruleta-section {
+            background: linear-gradient(135deg, #23273a, #131520);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            border: 1px dashed var(--primary);
+        }
+
+        .wheel-btn {
+            background-color: var(--primary);
+            color: #000;
             border: none;
-            padding: 12px 35px;
-            font-size: 18px;
+            padding: 12px 25px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 25px;
             cursor: pointer;
-            box-shadow: 0 0 15px #fff;
-            transition: 0.3s;
+            margin-top: 10px;
+            transition: transform 0.2s;
         }
 
-        /* Secciones de Productos */
-        .categoria-title {
-            font-size: 18px;
-            color: #00f0ff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 30px 0 15px 0;
-            border-left: 4px solid #00f0ff;
-            padding-left: 10px;
+        .wheel-btn:hover {
+            transform: scale(1.05);
+        }
+
+        /* Grid de Productos */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
         }
 
         .product-card {
-            background: #1a1c23;
+            background-color: var(--card-bg);
             border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
+            overflow: hidden;
+            border: 1px solid #252836;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid #2d3139;
-            transition: 0.3s;
+            flex-direction: column;
+            transition: transform 0.2s;
         }
 
         .product-card:hover {
-            border-color: #7928ca;
-            box-shadow: 0 0 10px rgba(121, 40, 202, 0.2);
+            transform: translateY(-4px);
         }
 
-        .product-info h3 {
-            margin: 0 0 5px 0;
+        .product-card.admin-mode {
+            border: 1px solid var(--admin-color);
+        }
+
+        .product-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background-color: #111;
+        }
+
+        .product-info {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .product-title {
             font-size: 16px;
-            color: #fff;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.4;
         }
 
-        .product-info span {
-            font-family: monospace;
-            background: #2d3139;
-            color: #a0aec0;
+        .product-meta {
+            font-size: 13px;
+            color: #aaa;
+            margin-bottom: 10px;
+        }
+
+        .pack-badge {
+            background-color: #2a2e45;
+            color: var(--primary);
             padding: 2px 6px;
             border-radius: 4px;
-            font-size: 12px;
+            font-weight: bold;
         }
 
-        /* Controles del Carrito con Animación Pulse */
-        .controls {
+        .price-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+
+        .product-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .admin-mode .product-price {
+            color: var(--admin-color);
+        }
+
+        /* Botones de acción */
+        .buy-controls {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .btn-qty {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            border: none;
-            background: linear-gradient(135deg, #00f0ff, #7928ca);
+            background-color: #252836;
             color: white;
+            border: 1px solid #444;
+            width: 32px;
+            height: 32px;
+            border-radius: 5px;
             font-size: 18px;
-            font-weight: bold;
             cursor: pointer;
-            transition: transform 0.1s ease, box-shadow 0.1s ease;
         }
 
-        .btn-qty:active {
-            transform: scale(0.9);
-            box-shadow: 0 0 15px #00ff66;
-        }
-
-        .qty-input {
-            width: 30px;
-            text-align: center;
-            background: transparent;
-            border: none;
-            color: white;
+        .qty-num {
             font-size: 16px;
             font-weight: bold;
+            min-width: 20px;
+            text-align: center;
         }
 
-        /* Barra de Compra Flotante Fija */
-        .footer-cart {
+        .btn-admin-action {
+            background-color: var(--admin-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        /* Barra de Carrito Flotante fijo abajo */
+        .cart-bar {
             position: fixed;
-            bottom: 0; left: 0; width: 100%;
-            background: #1a1c23;
-            border-top: 2px solid #7928ca;
-            padding: 20px;
-            box-shadow: 0 -5px 25px rgba(0,0,0,0.8);
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #1e2235;
+            padding: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-sizing: border-box;
-            z-index: 900;
+            border-top: 2px solid var(--primary);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
+            z-index: 100;
         }
 
-        .btn-order {
-            background: #25d366;
-            color: white;
+        .btn-whatsapp {
+            background-color: #25d366;
+            color: black;
             border: none;
-            padding: 12px 25px;
-            font-size: 15px;
+            padding: 10px 20px;
+            font-size: 16px;
             font-weight: bold;
-            border-radius: 30px;
+            border-radius: 8px;
             cursor: pointer;
-            box-shadow: 0 0 15px rgba(37, 211, 102, 0.4);
-            transition: 0.3s;
         }
 
-        .btn-order:hover {
-            box-shadow: 0 0 25px #25d366;
-            transform: translateY(-2px);
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-            100% { transform: scale(1); }
+        @media (min-width: 768px) {
+            .controls-wrapper {
+                flex-direction: row;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Capa de la Ruleta Emocional Obligatoria al Inicio -->
-    <div class="overlay" id="ruletaOverlay">
-        <h2 style="color: #fff; text-align:center; margin-bottom: 5px; text-shadow: 0 0 10px #00f0ff;">⚡ ¡PROBÁ TU SUERTE! ⚡</h2>
-        <p style="color: #a0aec0; margin-bottom: 25px; text-align:center;">Girá la ruleta y ganá un beneficio exclusivo para tu pedido</p>
-        <div class="ruleta-container">
-            <div class="pointer"></div>
-            <div class="wheel" id="wheel"></div>
+    <header id="main-header">
+        <h1>Tu Kompa Mayorista</h1>
+        <p>Catálogo Digital Autogestionado</p>
+        <div id="admin-indicator" style="display: none;">
+            <span class="admin-badge">MODO ADMINISTRADOR (COSTOS BASE)</span>
         </div>
-        <button class="btn-spin" id="spinBtn" onclick="girarRuleta()">GIRAR AHORA</button>
-    </div>
-
-    <header>
-        <h1>PULSE TECH</h1>
-        <p>Catálogo Mayorista & Minorista Directo</p>
     </header>
 
     <div class="container">
-        <!-- Cartel de Descuento Activado por Ruleta -->
-        <div class="ticker-discount" id="tickerDiscount">
-            🎉 ¡BENEFICIO ACTIVADO!: 10% OFF EXTRA EN TU COMPRA / ENVÍO BONIFICADO 🎉
-        </div>
-
-        <!-- CATEGORÍA 1 -->
-        <div class="categoria-title">Parlantes y Micrófonos</div>
         
-        <div class="product-card">
-            <div class="product-info">
-                <h3>Auto Parlante Vintage</h3>
-                <span>Código: WS-1965</span>
-            </div>
-            <div class="controls">
-                <button class="btn-qty" onclick="cambiar('WS-1965', -1)">-</button>
-                <input type="number" class="qty-input" id="qty-WS-1965" value="0" min="0" readonly>
-                <button class="btn-qty" onclick="cambiar('WS-1965', 1)">+</button>
-            </div>
+        <div class="ruleta-section" id="ruleta-container">
+            <h3>🎁 ¡Girá la ruleta de la suerte mayorista!</h3>
+            <p id="ruleta-msg">Sumá un descuento extra para tu pedido de hoy</p>
+            <button class="wheel-btn" onclick="girarRuleta()">GIRAR RULETA</button>
         </div>
 
-        <div class="product-card">
-            <div class="product-info">
-                <h3>Combo 3 en 1 Parlante + Auric + Reloj</h3>
-                <span>Código: B-21016</span>
-            </div>
-            <div class="controls">
-                <button class="btn-qty" onclick="cambiar('B-21016', -1)">-</button>
-                <input type="number" class="qty-input" id="qty-B-21016" value="0" min="0" readonly>
-                <button class="btn-qty" onclick="cambiar('B-21016', 1)">+</button>
-            </div>
+        <div class="controls-wrapper">
+            <input type="text" id="search" class="search-bar" placeholder="Buscar por palabra clave o código..." oninput="filtrarCatalogo()">
+            <select id="category-filter" class="category-select" onchange="filtrarCatalogo()">
+                <option value="TODOS">Todos los rubros</option>
+            </select>
         </div>
 
-        <div class="product-card">
-            <div class="product-info">
-                <h3>Microfono Karaoke K-585</h3>
-                <span>Código: KA-5796</span>
-            </div>
-            <div class="controls">
-                <button class="btn-qty" onclick="cambiar('KA-5796', -1)">-</button>
-                <input type="number" class="qty-input" id="qty-KA-5796" value="0" min="0" readonly>
-                <button class="btn-qty" onclick="cambiar('KA-5796', 1)">+</button>
-            </div>
-        </div>
+        <div class="products-grid" id="grid-productos"></div>
 
-        <!-- CATEGORÍA 2 -->
-        <div class="categoria-title">Auriculares y Audio</div>
-
-        <div class="product-card">
-            <div class="product-info">
-                <h3>Auriculares Bluetooth Cancelación Ruido</h3>
-                <span>Código: AURI-BT-PRO</span>
-            </div>
-            <div class="controls">
-                <button class="btn-qty" onclick="cambiar('AURI-BT-PRO', -1)">-</button>
-                <input type="number" class="qty-input" id="qty-AURI-BT-PRO" value="0" min="0" readonly>
-                <button class="btn-qty" onclick="cambiar('AURI-BT-PRO', 1)">+</button>
-            </div>
-        </div>
-
-        <!-- CATEGORÍA 3 -->
-        <div class="categoria-title">Cables y Conectividad</div>
-
-        <div class="product-card">
-            <div class="product-info">
-                <h3>Cable Carga Rápida USB a Tipo C 2M</h3>
-                <span>Código: CAB-USB-C</span>
-            </div>
-            <div class="controls">
-                <button class="btn-qty" onclick="cambiar('CAB-USB-C', -1)">-</button>
-                <input type="number" class="qty-input" id="qty-CAB-USB-C" value="0" min="0" readonly>
-                <button class="btn-qty" onclick="cambiar('CAB-USB-C', 1)">+</button>
-            </div>
-        </div>
     </div>
 
-    <!-- Barra Fija Inferior de Cierre -->
-    <div class="footer-cart">
+    <div class="cart-bar" id="barra-carrito">
         <div>
-            <div style="font-size: 13px; color: #a0aec0;">Items seleccionados</div>
-            <div style="font-size: 20px; font-weight: bold; color: #00ff66;" id="totalItems">0 un.</div>
+            <p>Items seleccionados: <span id="cart-count">0</span></p>
+            <h3>Total: <span id="cart-total">$0</span></h3>
         </div>
-        <button class="btn-order" onclick="enviarPedido()">🚀 CONFIRMAR PEDIDO (WA)</button>
+        <button class="btn-whatsapp" onclick="enviarPedidoWhatsApp()">Enviar pedido por WhatsApp 🚀</button>
     </div>
 
-    <!-- Audio de Efectos por Web Code para Dopamina -->
+    <script src="productos.js"></script>
+
     <script>
+        // Verificamos si entramos con ?admin=true
+        const urlParams = new URLSearchParams(window.location.search);
+        const esAdmin = urlParams.get('admin') === 'true';
+
         let carrito = {};
-        let totalUnidades = 0;
-        let premioGanado = "Ninguno (No giró)";
+        let descuentoAplicado = 0;
 
-        // Contexto de Audio Web Gratuito para Efectos de Sonido
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        function playSound(type) {
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-
-            if (type === 'click') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.05);
-            } else if (type === 'win') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(440, audioCtx.currentTime);
-                osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1);
-                osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2);
-                osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.4);
-            }
+        // Configuración inicial basada en el rol
+        if (esAdmin) {
+            document.getElementById('main-header').classList.add('admin-header');
+            document.getElementById('admin-indicator').style.display = 'block';
+            document.getElementById('ruleta-container').style.display = 'none';
+            document.getElementById('barra-carrito').style.display = 'none';
+            // Modificamos el margen inferior del body ya que no está la barra de carrito
+            document.body.style.paddingBottom = "20px";
         }
 
-        // Sistema de la Ruleta
-        function girarRuleta() {
-            playSound('click');
-            document.getElementById('spinBtn').disabled = true;
-            const wheel = document.getElementById('wheel');
+        // Cargar las categorías dinámicamente en el desplegable
+        function inicializarCategorias() {
+            const select = document.getElementById('category-filter');
+            // Extraemos categorías únicas del archivo generado por Python
+            const categorias = [...new Set(PRODUCTOS_DATA.map(p => p.category))];
             
-            // Forzamos estratégicamente a que caiga en una de las zonas con premio de conversión masiva (ej: 2835 grados)
-            const gradosGiro = 1800 + Math.floor(Math.random() * 360); 
-            wheel.style.transform = `rotate(${gradosGiro}deg)`;
-
-            setTimeout(() => {
-                playSound('win');
-                premioGanado = "10% OFF Exclusivo / Envío Bonificado";
-                document.getElementById('ruletaOverlay').style.display = 'none';
-                document.getElementById('tickerDiscount').style.display = 'block';
-            }, 4000);
+            categorias.forEach(cat => {
+                const opt = document.createElement('option');
+                opt.value = cat;
+                opt.textContent = cat;
+                select.appendChild(opt);
+            });
         }
 
-        // Control de Cantidades Interactiva
-        function cambiar(codigo, cambio) {
-            playSound('click');
-            let input = document.getElementById('qty-' + codigo);
-            let valorActual = parseInt(input.value);
-            let nuevoValor = valorActual + cambio;
+        // Renderizado del catálogo completo
+        function renderizarProductos(productos) {
+            const grid = document.getElementById('grid-productos');
+            grid.innerHTML = '';
 
-            if (nuevoValor >= 0) {
-                input.value = nuevoValor;
-                if (nuevoValor > 0) {
-                    carrito[codigo] = nuevoValor;
-                } else {
-                    delete carrito[codigo];
-                }
-                actualizarTotales();
-            }
-        }
-
-        function actualizarTotales() {
-            totalUnidades = 0;
-            for (let item in carrito) {
-                totalUnidades += carrito[item];
-            }
-            document.getElementById('totalItems').innerText = totalUnidades + " un.";
-        }
-
-        // Compresión del Embudo y Redirección a WhatsApp
-        function enviarPedido() {
-            if (totalUnidades === 0) {
-                alert("Tu carrito está vacío. Agregá algunos artículos antes de confirmar.");
+            if (productos.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1;">No se encontraron productos.</p>';
                 return;
             }
 
-            let numeroTelefono = "5492664611218";
-            let mensaje = "🛒 *NUEVO PEDIDO DIRECTO DESDE LA WEB*\n";
-            mensaje += "━━━━━━━━━━━━━━━━━━━━\n\n";
-            mensaje += `🎁 *Beneficio Ruleta:* ${premioGanado}\n\n`;
-            mensaje += "📦 *Artículos Seleccionados:*\n";
+            productos.forEach(prod => {
+                // Si es admin ve el precio directo del excel. Si es cliente, sumamos un 35% de ganancia estimada por defecto
+                const precioFinal = esAdmin ? prod.price : Math.round(prod.price * 1.35);
+                const cantidadEnCarrito = carrito[prod.id] ? carrito[prod.id].cantidad : 0;
 
-            for (let codigo in carrito) {
-                mensaje += `• Código: *${codigo}* — Cantidad: [ ${carrito[codigo]} un. ]\n`;
+                const card = document.createElement('div');
+                card.className = `product-card ${esAdmin ? 'admin-mode' : ''}`;
+
+                card.innerHTML = `
+                    <img class="product-img" src="${prod.image}" alt="${prod.name}">
+                    <div class="product-info">
+                        <div>
+                            <div class="product-title">${prod.name}</div>
+                            <div class="product-meta">
+                                Cód: <strong>${prod.id}</strong> | Pack bulto: <span class="pack-badge">${prod.pack} u.</span>
+                            </div>
+                        </div>
+                        
+                        <div class="price-container">
+                            <div class="product-price">$${precioFinal.toLocaleString('es-AR')}</div>
+                            
+                            ${!esAdmin ? `
+                                <div class="buy-controls">
+                                    <button class="btn-qty" onclick="actualizarCarrito('${prod.id}', -1, ${precioFinal}, '${prod.name}')">-</button>
+                                    <span class="qty-num" id="qty-${prod.id}">${cantidadEnCarrito}</span>
+                                    <button class="btn-qty" onclick="actualizarCarrito('${prod.id}', 1, ${precioFinal}, '${prod.name}')">+</button>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        ${esAdmin ? `
+                            <button class="btn-admin-action" onclick="copiarCodigo('${prod.id}')">
+                                📋 Copiar Código Proveedor
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filtro combinado de buscador de texto + desplegable de rubros
+        function filtrarCatalogo() {
+            const query = document.getElementById('search').value.toLowerCase();
+            const categoria = document.getElementById('category-filter').value;
+
+            const filtrados = PRODUCTOS_DATA.filter(prod => {
+                const cumpleFiltroTexto = prod.name.toLowerCase().includes(query) || prod.id.toLowerCase().includes(query);
+                const cumpleFiltroCategoria = (categoria === 'TODOS' || prod.category === categoria);
+                return cumpleFiltroTexto && cumpleFiltroCategoria;
+            });
+
+            renderizarProductos(filtrados);
+        }
+
+        // Lógica del Carrito de Compras
+        function actualizarCarrito(id, cambio, precio, name) {
+            if (!carrito[id]) {
+                carrito[id] = { name: name, precio: precio, cantidad: 0 };
             }
 
-            mensaje += "\n━━━━━━━━━━━━━━━━━━━━\n";
-            mensaje += "💬 _Hola! Armé mi pedido en el catálogo interactivo. Quedo a la espera para coordinar de forma manual el presupuesto final, las billeteras virtuales de pago y los tiempos de entrega._";
+            carrito[id].cantidad += cambio;
 
-            let url = "https://wa.me/" + numeroTelefono + "?text=" + encodeURIComponent(mensaje);
-            window.open(url, '_blank');
+            if (carrito[id].cantidad <= 0) {
+                delete carrito[id];
+                const el = document.getElementById(`qty-${id}`);
+                if (el) el.textContent = 0;
+            } else {
+                const el = document.getElementById(`qty-${id}`);
+                if (el) el.textContent = carrito[id].cantidad;
+            }
+
+            calcularTotales();
         }
+
+        function calcularTotales() {
+            let totalItems = 0;
+            let subtotal = 0;
+
+            for (const id in carrito) {
+                totalItems += carrito[id].cantidad;
+                subtotal += carrito[id].precio * carrito[id].cantidad;
+            }
+
+            if (descuentoAplicado > 0) {
+                subtotal = subtotal * (1 - (descuentoAplicado / 100));
+            }
+
+            document.getElementById('cart-count').textContent = totalItems;
+            document.getElementById('cart-total').textContent = `$${Math.round(subtotal).toLocaleString('es-AR')}`;
+        }
+
+        // Función del Administrador para copiar códigos al portapapeles rápido
+        function copiarCodigo(codigo) {
+            navigator.clipboard.writeText(codigo).then(() => {
+                alert(`Código ${codigo} copiado para buscar en el proveedor.`);
+            });
+        }
+
+        // Mini juego de Ruleta
+        function girarRuleta() {
+            const premios = [5, 10, 15, 0];
+            const resultado = premios[Math.floor(Math.random() * premios.length)];
+            
+            if (resultado > 0) {
+                descuentoAplicado = resultado;
+                document.getElementById('ruleta-msg').innerHTML = `🎉 ¡Ganaste un <strong>${resultado}% de DESCUENTO</strong> en el total de tu orden!`;
+            } else {
+                document.getElementById('ruleta-msg').textContent = "❌ ¡Casi! Seguí intentando en tu próxima compra.";
+            }
+            calcularTotales();
+        }
+
+        // Armado del mensaje estructurado para WhatsApp
+        function enviarPedidoWhatsApp() {
+            let keys = Object.keys(carrito);
+            if (keys.length === 0) {
+                alert("Tu carrito está vacío. Agregá productos antes de enviar.");
+                return;
+            }
+
+            let mensaje = "🛒 *NUEVO PEDIDO MAYORISTA - TU KOMPA*\n\n";
+            let total = 0;
+
+            keys.forEach(id => {
+                let item = carrito[id];
+                let sub = item.precio * item.cantidad;
+                total += sub;
+                mensaje += `• *${item.name}*\n  Cantidad: ${item.cantidad} u. | Subtotal: $${sub.toLocaleString('es-AR')}\n  _Ref: ${id}_\n\n`;
+            });
+
+            if (descuentoAplicado > 0) {
+                total = total * (1 - (descuentoAplicado / 100));
+                mensaje += `🎁 *Descuento Ruleta:* ${descuentoAplicado}%\n`;
+            }
+
+            mensaje += `💰 *TOTAL ESTIMADO A PAGAR: $${Math.round(total).toLocaleString('es-AR')}*`;
+            
+            // Reemplazá por tu número de WhatsApp real de atención comercial
+            const nroTelefono = "5492664000000"; 
+            const urlText = encodeURIComponent(mensaje);
+            window.open(`https://api.whatsapp.com/send?phone=${nroTelefono}&text=${urlText}`, '_blank');
+        }
+
+        // Inicializar la aplicación al cargar la página
+        window.onload = () => {
+            if (typeof PRODUCTOS_DATA !== 'undefined') {
+                inicializarCategorias();
+                renderizarProductos(PRODUCTOS_DATA);
+            } else {
+                document.getElementById('grid-productos').innerHTML = '<p style="text-align:center; grid-column: 1/-1; color:red;">Error: No se encontró el archivo productos.js. Ejecutá primero sincronizar.py</p>';
+            }
+        };
     </script>
 </body>
 </html>
