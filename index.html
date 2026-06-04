@@ -1,19 +1,34 @@
-Tu Kompa - Catálogo Mayorista Tech & Bazar
-    
+function renderizarProductos(lista) {
+    const grid = document.getElementById('grid-productos') || document.querySelector('.grid') || document.getElementById('productos-container');
+    if (!grid) return;
 
-
-
-    
-        Tu Kompa
-        DISTRIBUIDORA MAYORISTA
-    
-
-    
+    grid.innerHTML = lista.map(p => {
+        // Si por alguna razón no hay imagen, le asignamos una por defecto que no se rompa
+        const imgUrl = p.image ? p.image : "https://picsum.photos/400/300?random=1";
         
-        
-        
-    
+        // Aquí calcula tus precios según el botón seleccionado en tu interfaz (ej: Mayor +30%)
+        let precioFinal = p.price; 
+        if (esMayorista) {
+            precioFinal = p.price * 1.30;
+        } else if (esMinorista) {
+            precioFinal = p.price * 1.75;
+        }
 
-    
-        Variedades seleccionadas: 0 bultos
-        Enviar Pedido Registrado
+        return `
+            <div class="card" style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                <div style="width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background: #f8f9fa;">
+                    <img src="${imgUrl}" 
+                         alt="${p.name}" 
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         onerror="this.onerror=null; this.src='https://picsum.photos/400/300?blur=2';">
+                </div>
+                <h3 style="font-size: 16px; margin: 15px 0 5px 0; color: #0d0e15;">${p.name}</h3>
+                <p style="color: #888; font-size: 13px; margin-bottom: 10px;">Código: ${p.id}</p>
+                <p style="font-size: 24px; color: #e63946; font-weight: bold; margin-bottom: 15px;">$ ${Math.round(precioFinal).toLocaleString('es-AR')}</p>
+                
+                <button onclick="pedirPorWhatsApp('${p.id}')" style="width: 100%; background: #1d3557; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 8px;">Pedir por WhatsApp</button>
+                <button onclick="generarVideo('${p.id}')" style="width: 100%; background: #2a9d8f; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Generar Video Promocional</button>
+            </div>
+        `;
+    }).join('');
+}
