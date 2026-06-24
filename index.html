@@ -1,34 +1,80 @@
-function renderizarProductos(lista) {
-    const grid = document.getElementById('grid-productos') || document.querySelector('.grid') || document.getElementById('productos-container');
-    if (!grid) return;
-
-    grid.innerHTML = lista.map(p => {
-        // Si por alguna razón no hay imagen, le asignamos una por defecto que no se rompa
-        const imgUrl = p.image ? p.image : "https://picsum.photos/400/300?random=1";
-        
-        // Aquí calcula tus precios según el botón seleccionado en tu interfaz (ej: Mayor +30%)
-        let precioFinal = p.price; 
-        if (esMayorista) {
-            precioFinal = p.price * 1.30;
-        } else if (esMinorista) {
-            precioFinal = p.price * 1.75;
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Kompa Tienda | Electrónica Márquez</title>
+    <style>
+        :root {
+            --primary-color: #002366; /* Azul Marino */
+            --accent-color: #ff6600;  /* Naranja */
+            --bg-color: #f4f7f6;
         }
 
-        return `
-            <div class="card" style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-                <div style="width: 100%; height: 200px; display: flex; align-items: center; justify-content: center; overflow: hidden; border-radius: 8px; background: #f8f9fa;">
-                    <img src="${imgUrl}" 
-                         alt="${p.name}" 
-                         style="width: 100%; height: 100%; object-fit: cover;"
-                         onerror="this.onerror=null; this.src='https://picsum.photos/400/300?blur=2';">
-                </div>
-                <h3 style="font-size: 16px; margin: 15px 0 5px 0; color: #0d0e15;">${p.name}</h3>
-                <p style="color: #888; font-size: 13px; margin-bottom: 10px;">Código: ${p.id}</p>
-                <p style="font-size: 24px; color: #e63946; font-weight: bold; margin-bottom: 15px;">$ ${Math.round(precioFinal).toLocaleString('es-AR')}</p>
-                
-                <button onclick="pedirPorWhatsApp('${p.id}')" style="width: 100%; background: #1d3557; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-bottom: 8px;">Pedir por WhatsApp</button>
-                <button onclick="generarVideo('${p.id}')" style="width: 100%; background: #2a9d8f; color: white; padding: 10px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer;">Generar Video Promocional</button>
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg-color); margin: 0; }
+        
+        header { background-color: var(--primary-color); color: white; padding: 25px; text-align: center; }
+        
+        .container { max-width: 1200px; margin: auto; padding: 20px; }
+
+        /* Grid de Productos */
+        .grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); 
+            gap: 20px; 
+        }
+
+        .card { 
+            background: #fff; border-radius: 12px; padding: 20px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center;
+        }
+
+        .card img { width: 100%; height: 200px; object-fit: cover; border-radius: 8px; }
+        
+        h3 { font-size: 16px; margin: 15px 0; color: #333; }
+        
+        .price { font-size: 20px; color: var(--primary-color); font-weight: bold; margin: 10px 0; }
+
+        button { 
+            background-color: var(--accent-color); color: white; border: none; 
+            padding: 12px 20px; border-radius: 6px; cursor: pointer; width: 100%; font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>TU KOMPA TIENDA</h1>
+    <p>Electrónica Márquez - Tecnología de Confianza</p>
+</header>
+
+<div class="container">
+    <div class="grid" id="grid-productos">
+        </div>
+</div>
+
+<script>
+    // Función para renderizar los productos
+    function renderizar() {
+        const grid = document.getElementById('grid-productos');
+        // Asumimos que window.PRODUCTOS_DATA viene de tu archivo productos.js
+        if (typeof window.PRODUCTOS_DATA === 'undefined') return;
+
+        grid.innerHTML = window.PRODUCTOS_DATA.map(p => `
+            <div class="card">
+                <img src="${p.images ? p.images[0] : 'placeholder.jpg'}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <p class="price">$ ${Number(p.price || 0).toLocaleString('es-AR')}</p>
+                <button onclick="alert('Iniciando pago para: ${p.name}')">Comprar Ahora</button>
             </div>
-        `;
-    }).join('');
-}
+        `).join('');
+    }
+
+    // Ejecutar carga al terminar de cargar el documento
+    document.addEventListener('DOMContentLoaded', renderizar);
+</script>
+
+<script src="productos.js"></script>
+
+</body>
+</html>
