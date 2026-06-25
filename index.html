@@ -1,3 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mi Tienda</title>
+    <!-- Librería para leer Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
+        .card { border: 1px solid #ccc; padding: 10px; text-align: center; }
+        img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+
 <div style="text-align: center; margin: 20px;">
     <label><b>Tipo de Cliente:</b></label>
     <select id="tipo-cliente" onchange="renderizar()">
@@ -9,31 +23,37 @@
 <div class="grid" id="grid-productos"></div>
 
 <script>
+    let misProductos = [];
+
+    // Esta función carga tu archivo Excel automáticamente
+    async function cargarCatalogo() {
+        const respuesta = await fetch('archivo.xls');
+        const data = await respuesta.arrayBuffer();
+        const workbook = XLSX.read(data, {type: 'array'});
+        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+        // Convierte el Excel a formato JSON
+        misProductos = XLSX.utils.sheet_to_json(worksheet);
+        renderizar();
+    }
+
     function renderizar() {
         const modo = document.getElementById('tipo-cliente').value;
         const grid = document.getElementById('grid-productos');
         
-        grid.innerHTML = window.PRODUCTOS_DATA.map(p => {
-            // Cálculos estratégicos
+        grid.innerHTML = misProductos.map(p => {
+            // Asume que tu Excel tiene columnas: 'name', 'price', 'image'
             const precioFinal = modo === 'min' ? Math.round(p.price * 1.60) : Math.round(p.price * 1.20);
-            
             return `
             <div class="card">
-                <img src="${p.images[0]}" alt="${p.name}">
+                <img src="${p.image}" alt="${p.name}">
                 <h3>${p.name}</h3>
                 <div class="price">$${precioFinal.toLocaleString()}</div>
-                <button onclick="pedirPorWhatsApp('${p.name}', ${precioFinal})">Comprar</button>
-            </div>
-            `;
+                <button onclick="alert('Pedido: ${p.name}')">Comprar</button>
+            </div>`;
         }).join('');
     }
 
-    function pedirPorWhatsApp(nombre, precio) {
-        const numero = "5492664838880";
-        const mensaje = `Hola, quiero comprar: *${nombre}*. Precio: *$${precio.toLocaleString()}*.`;
-        window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, '_blank');
-    }
-
-    // Inicializar
-    renderizar();
+    cargarCatalogo();
 </script>
+</body>
+</html>
