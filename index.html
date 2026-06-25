@@ -1,46 +1,39 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tu Kompa Tienda | Electrónica Márquez</title>
-    <style>
-        :root { --primary: #1d3557; --accent: #ff6600; }
-        body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; max-width: 1200px; margin: auto; }
-        .card { background: white; padding: 15px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); text-align: center; }
-        img { width: 100%; height: 200px; object-fit: cover; border-radius: 5px; }
-        h3 { font-size: 14px; margin: 10px 0; min-height: 40px; }
-        .price { font-size: 18px; color: var(--primary); font-weight: bold; margin: 10px 0; }
-        button { background: var(--accent); color: white; border: none; padding: 10px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; }
-    </style>
-</head>
-<body>
+<div style="text-align: center; margin: 20px;">
+    <label><b>Tipo de Cliente:</b></label>
+    <select id="tipo-cliente" onchange="renderizar()">
+        <option value="min">Minorista (Público)</option>
+        <option value="may">Mayorista</option>
+    </select>
+</div>
 
 <div class="grid" id="grid-productos"></div>
 
-<script src="productos.js"></script>
 <script>
+    function renderizar() {
+        const modo = document.getElementById('tipo-cliente').value;
+        const grid = document.getElementById('grid-productos');
+        
+        grid.innerHTML = window.PRODUCTOS_DATA.map(p => {
+            // Cálculos estratégicos
+            const precioFinal = modo === 'min' ? Math.round(p.price * 1.60) : Math.round(p.price * 1.20);
+            
+            return `
+            <div class="card">
+                <img src="${p.images[0]}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <div class="price">$${precioFinal.toLocaleString()}</div>
+                <button onclick="pedirPorWhatsApp('${p.name}', ${precioFinal})">Comprar</button>
+            </div>
+            `;
+        }).join('');
+    }
+
     function pedirPorWhatsApp(nombre, precio) {
         const numero = "5492664838880";
         const mensaje = `Hola, quiero comprar: *${nombre}*. Precio: *$${precio.toLocaleString()}*.`;
         window.open(`https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`, '_blank');
     }
 
-    function renderizar() {
-        const grid = document.getElementById('grid-productos');
-        if (typeof window.PRODUCTOS_DATA === 'undefined') return;
-
-        grid.innerHTML = window.PRODUCTOS_DATA.map(p => `
-            <div class="card">
-                <img src="${p.images ? p.images[0] : 'https://picsum.photos/400/300'}" alt="${p.name}">
-                <h3>${p.name}</h3>
-                <p class="price">$ ${Number(p.price || 0).toLocaleString()}</p>
-                <button onclick="pedirPorWhatsApp('${p.name}', ${p.price || 0})">Pedir por WhatsApp</button>
-            </div>
-        `).join('');
-    }
-    document.addEventListener('DOMContentLoaded', renderizar);
+    // Inicializar
+    renderizar();
 </script>
-</body>
-</html>
