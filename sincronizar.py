@@ -1,21 +1,28 @@
 import json
+import os
 
-def calcular_precios(costo):
-    # Lógica Estratégica:
-    # Margen Minorista 60% (para ser competitivo) y Mayorista 20%
-    minorista = round(costo * 1.60, -1)
-    mayorista = round(costo * 1.20, -1)
-    return minorista, mayorista
+# Configuración de márgenes
+MARGEN_MINORISTA = 1.60  # 60% de ganancia sobre costo
+MARGEN_MAYORISTA = 1.20  # 20% de ganancia sobre costo
 
-def procesar_productos(lista_raw):
-    catalogo = []
-    for item in lista_raw:
-        precio_min, precio_may = calcular_precios(item['precio'])
-        catalogo.append({
-            "id": item['id'],
-            "name": item['name'],
-            "precio_minorista": precio_min,
-            "precio_mayorista": precio_may,
-            "image": item['image']
+def sincronizar_catalogo(lista_productos):
+    # Procesar productos con cálculos automáticos
+    catalogo_final = []
+    
+    for p in lista_productos:
+        costo = p['price']
+        # Calculamos minorista y mayorista automáticamente
+        catalogo_final.append({
+            "id": p['id'],
+            "name": p['name'],
+            "precio_min": round(costo * MARGEN_MINORISTA, -1),
+            "precio_may": round(costo * MARGEN_MAYORISTA, -1),
+            "images": p['images']
         })
-    return catalogo
+
+    # Guardar en productos.js
+    with open('productos.js', 'w', encoding='utf-8') as f:
+        f.write("window.PRODUCTOS_DATA = " + json.dumps(catalogo_final, indent=4, ensure_ascii=False) + ";")
+
+# --- AQUÍ PEGARÁS TU LISTA DE PRODUCTOS ---
+# El script tomará los datos, calculará los márgenes y generará el archivo JS.
