@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
     <title>Mi Tienda</title>
-    <!-- Librería para leer Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
-        .card { border: 1px solid #ccc; padding: 10px; text-align: center; }
-        img { max-width: 100%; height: auto; }
+        .card { border: 1px solid #ccc; padding: 10px; text-align: center; border-radius: 8px; }
+        img { max-width: 100%; height: 150px; object-fit: contain; }
+        .price { font-weight: bold; color: #333; margin: 10px 0; }
     </style>
 </head>
 <body>
@@ -22,26 +22,19 @@
 
 <div class="grid" id="grid-productos"></div>
 
+<script src="productos.js"></script>
 <script>
-    let misProductos = [];
-
-    // Esta función carga tu archivo Excel automáticamente
-    async function cargarCatalogo() {
-        const respuesta = await fetch('archivo.xls');
-        const data = await respuesta.arrayBuffer();
-        const workbook = XLSX.read(data, {type: 'array'});
-        const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-        // Convierte el Excel a formato JSON
-        misProductos = XLSX.utils.sheet_to_json(worksheet);
-        renderizar();
-    }
-
     function renderizar() {
         const modo = document.getElementById('tipo-cliente').value;
         const grid = document.getElementById('grid-productos');
         
-        grid.innerHTML = misProductos.map(p => {
-            // Asume que tu Excel tiene columnas: 'name', 'price', 'image'
+        // Verifica si los datos existen
+        if (typeof window.PRODUCTOS_DATA === 'undefined') {
+            grid.innerHTML = '<p>Cargando productos...</p>';
+            return;
+        }
+
+        grid.innerHTML = window.PRODUCTOS_DATA.map(p => {
             const precioFinal = modo === 'min' ? Math.round(p.price * 1.60) : Math.round(p.price * 1.20);
             return `
             <div class="card">
@@ -52,8 +45,9 @@
             </div>`;
         }).join('');
     }
-
-    cargarCatalogo();
+    
+    renderizar();
 </script>
+
 </body>
 </html>
