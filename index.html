@@ -337,6 +337,114 @@
       .card-img-wrap { height: 120px; }
       .card-price { font-size: 17px; }
     }
+
+    /* ================= ASISTENTE DE VENTAS IA ================= */
+    .ai-fab {
+      position: fixed; bottom: 24px; right: 24px; z-index: 400;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; box-shadow: 0 8px 24px rgba(108,71,255,.45);
+      transition: transform .2s;
+    }
+    .ai-fab:hover { transform: scale(1.08); }
+    .ai-fab-badge {
+      position: absolute; top: -2px; right: -2px;
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--danger); border: 2px solid var(--bg);
+      display: none;
+    }
+    .ai-fab-badge.show { display: block; animation: aiPulse 1.4s infinite; }
+    @keyframes aiPulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,71,87,.6); }
+      70% { box-shadow: 0 0 0 8px rgba(255,71,87,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,71,87,0); }
+    }
+    .ai-bubble-hint {
+      position: fixed; bottom: 92px; right: 24px; z-index: 400;
+      background: var(--surface); border: 1px solid var(--border);
+      color: var(--text); padding: 10px 14px; border-radius: 14px 14px 4px 14px;
+      font-size: 13px; max-width: 220px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      opacity: 0; transform: translateY(10px); pointer-events: none;
+      transition: all .3s;
+    }
+    .ai-bubble-hint.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    #ai-panel {
+      position: fixed; bottom: 24px; right: 24px; z-index: 401;
+      width: 360px; max-width: calc(100vw - 32px);
+      height: 520px; max-height: calc(100vh - 100px);
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 18px; overflow: hidden;
+      display: flex; flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      transform: scale(.9) translateY(20px); opacity: 0; pointer-events: none;
+      transform-origin: bottom right;
+      transition: all .25s ease;
+    }
+    #ai-panel.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
+    .ai-header {
+      background: linear-gradient(135deg, var(--accent), #9b59b6);
+      padding: 14px 16px; display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .ai-header-avatar {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: rgba(255,255,255,.2); display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .ai-header-info { flex: 1; line-height: 1.3; }
+    .ai-header-info strong { font-size: 14px; display: block; color: #fff; }
+    .ai-header-info span { font-size: 11px; color: rgba(255,255,255,.85); display: flex; align-items: center; gap: 4px; }
+    .ai-dot { width: 7px; height: 7px; border-radius: 50%; background: #4dff88; display: inline-block; }
+    .ai-close { background: none; border: none; color: #fff; font-size: 20px; cursor: pointer; opacity: .85; }
+    .ai-close:hover { opacity: 1; }
+    .ai-messages { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; background: var(--bg); }
+    .ai-msg { max-width: 86%; font-size: 13px; line-height: 1.45; padding: 9px 12px; border-radius: 14px; white-space: pre-wrap; }
+    .ai-msg.bot { align-self: flex-start; background: var(--surface2); border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+    .ai-msg.user { align-self: flex-end; background: var(--accent); color: #fff; border-bottom-right-radius: 4px; }
+    .ai-quick { display: flex; flex-wrap: wrap; gap: 6px; align-self: flex-start; max-width: 100%; }
+    .ai-chip {
+      background: var(--surface2); border: 1px solid var(--accent); color: var(--accent2);
+      border-radius: 20px; padding: 7px 12px; font-size: 12px; cursor: pointer;
+      transition: all .2s; font-family: 'Inter', sans-serif;
+    }
+    .ai-chip:hover { background: var(--accent); color: #fff; }
+    .ai-pcard {
+      align-self: flex-start; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 12px; padding: 8px; display: flex; gap: 8px; width: 100%; max-width: 100%;
+    }
+    .ai-pcard img { width: 52px; height: 52px; object-fit: contain; background: #fff; border-radius: 6px; flex-shrink: 0; }
+    .ai-pcard-info { flex: 1; min-width: 0; }
+    .ai-pcard-name { font-size: 11.5px; font-weight: 600; line-height: 1.3; }
+    .ai-pcard-price { font-size: 14px; font-weight: 700; color: var(--price); margin: 3px 0; }
+    .ai-pcard-actions { display: flex; gap: 6px; }
+    .ai-pcard-actions button { border: none; border-radius: 6px; padding: 5px 8px; font-size: 11px; cursor: pointer; font-weight: 600; }
+    .ai-pcard-actions .add { background: var(--accent); color: #fff; }
+    .ai-pcard-actions .view { background: var(--border); color: var(--text); }
+    .ai-typing { align-self: flex-start; display: flex; gap: 4px; padding: 10px 14px; background: var(--surface2); border-radius: 14px; border-bottom-left-radius: 4px; }
+    .ai-typing span { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: aiTyping 1s infinite ease-in-out; display: inline-block; }
+    .ai-typing span:nth-child(2) { animation-delay: .15s; }
+    .ai-typing span:nth-child(3) { animation-delay: .3s; }
+    @keyframes aiTyping {
+      0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+      30% { transform: translateY(-4px); opacity: 1; }
+    }
+    .ai-input-bar { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); background: var(--surface); flex-shrink: 0; }
+    .ai-input-bar input {
+      flex: 1; background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+      border-radius: 20px; padding: 10px 14px; font-size: 13px; outline: none;
+    }
+    .ai-input-bar input:focus { border-color: var(--accent); }
+    .ai-input-bar button {
+      background: var(--accent); border: none; color: #fff; width: 38px; height: 38px;
+      border-radius: 50%; cursor: pointer; font-size: 15px; flex-shrink: 0;
+    }
+    .ai-input-bar button:hover { background: #7d5fff; }
+    @media (max-width: 600px) {
+      #ai-panel { right: 12px; bottom: 90px; width: calc(100vw - 24px); height: calc(100vh - 160px); }
+      .ai-fab { right: 16px; bottom: 16px; }
+      .ai-bubble-hint { right: 16px; bottom: 84px; max-width: 180px; }
+    }
   </style>
 </head>
 <body>
@@ -434,6 +542,29 @@
 
 <!-- TOAST -->
 <div id="toast">✓ Agregado al carrito</div>
+
+<!-- ================= ASISTENTE DE VENTAS IA ================= -->
+<div class="ai-bubble-hint" id="ai-hint">👋 ¿Buscás algo puntual? Preguntame, te ayudo a encontrarlo y a pagar.</div>
+<button class="ai-fab" id="ai-fab" onclick="aiToggle()" aria-label="Asistente de compras">
+  🤖
+  <span class="ai-fab-badge" id="ai-badge"></span>
+</button>
+
+<div id="ai-panel">
+  <div class="ai-header">
+    <div class="ai-header-avatar">🤖</div>
+    <div class="ai-header-info">
+      <strong>Asistente Sabino Tech</strong>
+      <span><span class="ai-dot"></span> En línea · te ayudo a comprar</span>
+    </div>
+    <button class="ai-close" onclick="aiToggle()">✕</button>
+  </div>
+  <div class="ai-messages" id="ai-messages"></div>
+  <div class="ai-input-bar">
+    <input type="text" id="ai-input" placeholder="Escribí lo que buscás..." onkeydown="if(event.key==='Enter')aiSend()" autocomplete="off">
+    <button onclick="aiSend()" aria-label="Enviar">➤</button>
+  </div>
+</div>
 
 <script src="productos.js"></script>
 <script>
@@ -644,6 +775,354 @@ function showToast(msg) {
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2000);
 }
+
+// ================================================================
+// ASISTENTE DE VENTAS IA — busca productos, orienta al usuario por
+// la tienda y lo acompaña hasta pagar por WhatsApp.
+// ================================================================
+const AI_CAT_LABEL = { all:'Todo el catálogo', audio:'Audio', led:'LED/Luces', cable:'Cables', herramienta:'Herramientas', bici:'Bici/Patín', carga:'Cargadores' };
+const AI_STOPWORDS = ['que','con','para','por','una','uno','los','las','del','tengo','quiero','necesito','busco','hay','algo','como','esta','este','precio','cuesta','vale','tiene','tienen','disponible','hola','buenas','buenos','dias','tardes','noches','porfa','porfavor','favor','me','un','el','la','de','en','y','o','al','mi','se','es','ese','esa','mas','muy'];
+
+function aiNormalizar(s) {
+  return (s || '').toString().toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .replace(/\s+/g, ' ').trim();
+}
+
+let aiOpened = false;
+
+function aiToggle() {
+  const panel = document.getElementById('ai-panel');
+  const isOpen = panel.classList.toggle('open');
+  document.getElementById('ai-hint').classList.remove('show');
+  document.getElementById('ai-badge').classList.remove('show');
+  if (isOpen && !aiOpened) {
+    aiOpened = true;
+    aiPush('bot', '¡Hola! 👋 Soy el asistente de Sabino Tech. Te ayudo a encontrar el producto que buscás, resolver dudas de precio/pago/envío y armar tu pedido para pagarlo por WhatsApp.\n\n¿En qué te ayudo?');
+    aiQuickReplies(['🔍 Buscar un producto', '🏷️ Ver categorías', '💳 Cómo pago', '🚚 Envíos', '🛒 Ver mi carrito', '🗣️ Hablar con un vendedor']);
+  }
+  if (isOpen) setTimeout(() => document.getElementById('ai-input').focus(), 100);
+}
+
+function aiPush(who, text) {
+  const box = document.getElementById('ai-messages');
+  const div = document.createElement('div');
+  div.className = 'ai-msg ' + who;
+  div.textContent = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function aiQuickReplies(options) {
+  const box = document.getElementById('ai-messages');
+  const wrap = document.createElement('div');
+  wrap.className = 'ai-quick';
+  options.forEach(opt => {
+    const chip = document.createElement('button');
+    chip.className = 'ai-chip';
+    chip.type = 'button';
+    chip.textContent = opt;
+    chip.onclick = () => { document.getElementById('ai-input').value = opt; aiSend(); };
+    wrap.appendChild(chip);
+  });
+  box.appendChild(wrap);
+  box.scrollTop = box.scrollHeight;
+}
+
+function aiProductCards(productos) {
+  const box = document.getElementById('ai-messages');
+  productos.forEach(p => {
+    const pr = precio(p);
+    const card = document.createElement('div');
+    card.className = 'ai-pcard';
+    card.innerHTML = `
+      <img src="${p.image}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/52x52/1c1c28/888?text=?'">
+      <div class="ai-pcard-info">
+        <div class="ai-pcard-name">${p.name}</div>
+        <div class="ai-pcard-price">$${pr.toLocaleString('es-AR')}</div>
+        <div class="ai-pcard-actions">
+          <button class="add" onclick="addCart('${p.id}')">+ Agregar</button>
+          <button class="view" onclick="openModal('${p.id}')">Ver</button>
+        </div>
+      </div>`;
+    box.appendChild(card);
+  });
+  box.scrollTop = box.scrollHeight;
+}
+
+function aiTypingShow() {
+  const box = document.getElementById('ai-messages');
+  const t = document.createElement('div');
+  t.className = 'ai-typing';
+  t.id = 'ai-typing-ind';
+  t.innerHTML = '<span></span><span></span><span></span>';
+  box.appendChild(t);
+  box.scrollTop = box.scrollHeight;
+}
+function aiTypingHide() {
+  const t = document.getElementById('ai-typing-ind');
+  if (t) t.remove();
+}
+
+function aiProductosDeCategoria(cat) {
+  const data = window.PRODUCTOS_DATA || [];
+  if (cat === 'all') return data;
+  return data.filter(p => (CAT_KEYS[cat] || []).some(k => (p.name + ' ' + p.id).toLowerCase().includes(k)));
+}
+
+function aiBuscarProductos(texto, limit = 4) {
+  const q = aiNormalizar(texto);
+  let tokens = q.split(' ').filter(t => t.length >= 3 && !AI_STOPWORDS.includes(t));
+  if (!tokens.length) tokens = q.split(' ').filter(Boolean);
+  const data = window.PRODUCTOS_DATA || [];
+  const scored = data.map(p => {
+    const nombre = aiNormalizar(p.name + ' ' + p.id);
+    let score = 0;
+    tokens.forEach(t => { if (nombre.includes(t)) score += t.length >= 4 ? 2 : 1; });
+    if (q.length >= 4 && nombre.includes(q)) score += 3;
+    return { p, score };
+  }).filter(x => x.score > 0);
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, limit).map(x => x.p);
+}
+
+function aiDetectarCategoria(q) {
+  const nombres = {
+    audio: ['audio', 'auricular', 'parlante', 'handy', 'vincha'],
+    led: ['led', 'luz', 'luces', 'tira led', 'linterna'],
+    cable: ['cable', 'cables', 'hdmi'],
+    herramienta: ['herramienta', 'herramientas', 'cinta metrica', 'destornillador'],
+    bici: ['bici', 'bicicleta', 'monopatin', 'patin', 'scooter'],
+    carga: ['cargador', 'cargadores', 'power bank', 'bateria'],
+  };
+  for (const cat in nombres) { if (nombres[cat].some(k => q.includes(k))) return cat; }
+  for (const cat in CAT_KEYS) { if (CAT_KEYS[cat].some(k => q.includes(k))) return cat; }
+  return null;
+}
+
+function aiDetectarPresupuesto(q) {
+  const tienePista = /presupuesto|hasta \d|menos de|maximo|gastar|tengo\s*\$?\s*\d|con\s*\$?\s*\d/.test(q);
+  if (!tienePista) return null;
+  const m = q.replace(/\./g, '').match(/(\d{3,7})/);
+  return m ? parseInt(m[1], 10) : null;
+}
+
+function aiIrACategoria(cat) {
+  categoriaActual = cat;
+  const orden = ['all', 'audio', 'led', 'cable', 'herramienta', 'bici', 'carga'];
+  const btns = document.querySelectorAll('.tab-btn');
+  btns.forEach((b, i) => b.classList.toggle('active', orden[i] === cat));
+  render();
+  document.querySelector('.grid-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+const AI_CAT_CHIPS = { 'audio':'audio', 'led luces':'led', 'cables':'cable', 'herramientas':'herramienta', 'bici patin':'bici', 'cargadores':'carga' };
+
+function aiResponder(textoOriginal) {
+  const q = aiNormalizar(textoOriginal);
+
+  // Saludo
+  if (/^(hola|buenas|buenos dias|buenas tardes|buenas noches|hey|ey|que tal)\b/.test(q) || q.length < 2) {
+    aiPush('bot', '¡Hola! ¿Qué estás buscando hoy? Contame el producto o elegí una opción 👇');
+    aiQuickReplies(['🏷️ Ver categorías', '🔍 Buscar producto', '🛒 Ver mi carrito']);
+    return;
+  }
+
+  // Agradecimiento
+  if (/gracias|genial|perfecto|buenisimo|joya|excelente/.test(q)) {
+    aiPush('bot', '¡De nada! 😊 Cualquier otra duda, acá estoy. Cuando quieras armamos el pedido por WhatsApp.');
+    return;
+  }
+
+  // Hablar con vendedor / humano
+  if (/vendedor|humano|persona real|asesor|alguien real|hablar con alguien/.test(q)) {
+    aiPush('bot', 'Te comunico directo con Sabino por WhatsApp para que te atienda personalmente. Abriendo el chat…');
+    setTimeout(() => {
+      const msg = 'Hola! Vengo del asistente de la web y quisiera hablar con un vendedor 🙋';
+      window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+    }, 400);
+    return;
+  }
+
+  // Ver carrito
+  if ((/^ver mi carrito$/.test(q) || /\bcarrito\b/.test(q)) && !/agregar|sacar|quitar/.test(q)) {
+    if (!cart.length) {
+      aiPush('bot', 'Todavía no agregaste nada al carrito. Decime qué producto buscás y te lo muestro.');
+      aiQuickReplies(['🏷️ Ver categorías', '🔍 Buscar producto']);
+    } else {
+      const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+      aiPush('bot', `Tenés ${cart.reduce((s, c) => s + c.qty, 0)} producto(s) en el carrito. Total: $${total.toLocaleString('es-AR')}.`);
+      toggleCart();
+      aiQuickReplies(['✅ Finalizar pedido por WhatsApp', '➕ Seguir comprando']);
+    }
+    return;
+  }
+
+  // Seguir comprando
+  if (/seguir comprando/.test(q)) {
+    aiPush('bot', '¡Dale! Mirá el catálogo y cuando quieras seguimos armando el pedido. También me podés decir qué buscás.');
+    return;
+  }
+
+  // Armar pedido (sin cerrarlo todavía)
+  if (/armar pedido|hacer pedido|arma mi pedido/.test(q)) {
+    if (cart.length) {
+      const total = cart.reduce((s, c) => s + c.price * c.qty, 0);
+      aiPush('bot', `Ya tenés ${cart.reduce((s, c) => s + c.qty, 0)} producto(s) por $${total.toLocaleString('es-AR')}. ¿Agregamos algo más o finalizamos?`);
+      aiQuickReplies(['✅ Finalizar pedido por WhatsApp', '🔍 Buscar otro producto']);
+    } else {
+      aiPush('bot', 'Decime qué producto buscás o elegí una categoría y lo vamos agregando al pedido.');
+      aiQuickReplies(['🏷️ Ver categorías', '🔍 Buscar producto']);
+    }
+    return;
+  }
+
+  // Finalizar / pagar → dispara el checkout real por WhatsApp
+  if (/finalizar|confirmar pedido|pagar|comprar ya|checkout|cerrar compra/.test(q)) {
+    if (!cart.length) {
+      aiPush('bot', 'Tu carrito está vacío todavía 🙈 Agregá al menos un producto y te ayudo a finalizar la compra.');
+      aiQuickReplies(['🏷️ Ver categorías', '🔍 Buscar producto']);
+    } else {
+      aiPush('bot', '¡Perfecto! Te armo el resumen del pedido y abro WhatsApp para coordinar el pago (transferencia o cripto).');
+      setTimeout(() => pedirPorWhatsApp(), 400);
+    }
+    return;
+  }
+
+  // Mayorista / minorista / combo
+  if (/mayorista|por mayor|al por mayor/.test(q)) {
+    document.getElementById('tipo').value = 'may'; render();
+    aiPush('bot', 'Listo, activé precios Mayorista (+20% sobre costo, por bulto). ¿Qué producto te interesa?');
+    aiQuickReplies(['🏷️ Ver categorías', '🔍 Buscar producto']);
+    return;
+  }
+  if (/minorista|por menor|al detalle/.test(q)) {
+    document.getElementById('tipo').value = 'min'; render();
+    aiPush('bot', 'Listo, activé precios Minorista. ¿Qué producto buscás?');
+    return;
+  }
+  if (/\bcombo\b/.test(q)) {
+    document.getElementById('tipo').value = 'combo'; render();
+    aiPush('bot', 'Activé el modo Combo. ¿Querés que te muestre algunas opciones?');
+    return;
+  }
+
+  // Cripto
+  if (/cripto|bitcoin|usdt|usdc|bnb/.test(q)) {
+    aiPush('bot', 'Sí, aceptamos cripto: BTC, USDT, USDC y BNB 💰. La dirección de la wallet te la pasamos al coordinar el pedido por WhatsApp para tener siempre el dato actualizado.');
+    aiQuickReplies(['🔍 Buscar producto', '✅ Armar pedido']);
+    return;
+  }
+
+  // Pago
+  if (/pago|pagar|transferencia|medios de pago|como se paga/.test(q)) {
+    aiPush('bot', 'Podés pagar por transferencia bancaria o en cripto (BTC/USDT/USDC/BNB). Armamos el pedido acá, y coordinamos el medio de pago por WhatsApp antes de confirmar.');
+    aiQuickReplies(['🏷️ Ver categorías', '✅ Armar pedido']);
+    return;
+  }
+
+  // Envío
+  if (/envio|envios|entrega|domicilio|delivery|retiro|ubicacion|donde estan|donde queda/.test(q)) {
+    aiPush('bot', 'La entrega se coordina directo con Sabino por WhatsApp según tu zona (envío o punto de encuentro en Buenos Aires). Armá tu pedido y lo conversamos ahí.');
+    aiQuickReplies(['🗣️ Hablar con un vendedor', '🔍 Buscar producto']);
+    return;
+  }
+
+  // Listado de categorías
+  if (/categoria|categorias|que rubros|que vendes|que tenes/.test(q)) {
+    aiPush('bot', 'Estas son nuestras categorías. Tocá una para verla:');
+    aiQuickReplies(['🎧 Audio', '💡 LED/Luces', '🔌 Cables', '🔧 Herramientas', '🚲 Bici/Patín', '⚡ Cargadores']);
+    return;
+  }
+
+  // Click directo en chip de categoría
+  if (AI_CAT_CHIPS[q]) {
+    const cat = AI_CAT_CHIPS[q];
+    aiIrACategoria(cat);
+    const items = aiProductosDeCategoria(cat);
+    aiPush('bot', `Te llevé a "${AI_CAT_LABEL[cat]}" (${items.length} productos). Te dejo algunas opciones acá mismo:`);
+    aiProductCards(items.slice(0, 4));
+    return;
+  }
+
+  // Presupuesto
+  const presupuesto = aiDetectarPresupuesto(q);
+  if (presupuesto) {
+    const modo = getModo();
+    const data = (window.PRODUCTOS_DATA || [])
+      .map(p => ({ p, pr: precio(p) }))
+      .filter(x => x.pr <= presupuesto)
+      .sort((a, b) => b.pr - a.pr)
+      .slice(0, 4).map(x => x.p);
+    if (data.length) {
+      aiPush('bot', `Con $${presupuesto.toLocaleString('es-AR')} estas son las mejores opciones que encontré:`);
+      aiProductCards(data);
+    } else {
+      aiPush('bot', `No encontré productos dentro de $${presupuesto.toLocaleString('es-AR')} en modo ${MODO_LABEL[modo]}. ¿Te muestro las opciones más económicas igual?`);
+      aiQuickReplies(['Sí, mostrame las más baratas']);
+    }
+    return;
+  }
+  if (/mas baratas|mas economicas/.test(q)) {
+    const data = (window.PRODUCTOS_DATA || []).map(p => ({ p, pr: precio(p) })).sort((a, b) => a.pr - b.pr).slice(0, 4).map(x => x.p);
+    aiPush('bot', 'Estas son las opciones más económicas del catálogo:');
+    aiProductCards(data);
+    return;
+  }
+
+  // Pedido explícito de ayuda para buscar
+  if (/^buscar\b/.test(q)) {
+    aiPush('bot', 'Contame qué producto necesitás (ej: "cargador rápido", "auriculares bluetooth", "cinta métrica") y te muestro las opciones.');
+    return;
+  }
+
+  // Búsqueda inteligente en el catálogo real
+  const resultados = aiBuscarProductos(textoOriginal, 4);
+  if (resultados.length) {
+    aiPush('bot', `Encontré ${resultados.length} producto(s) que podrían servirte:`);
+    aiProductCards(resultados);
+    aiQuickReplies(['✅ Armar pedido', '🔍 Buscar otra cosa']);
+    return;
+  }
+
+  // Fallback: detectar categoría por palabra suelta
+  const catDetectada = aiDetectarCategoria(q);
+  if (catDetectada) {
+    aiIrACategoria(catDetectada);
+    const items = aiProductosDeCategoria(catDetectada);
+    aiPush('bot', `Te muestro la categoría "${AI_CAT_LABEL[catDetectada]}", mirá lo que tenemos:`);
+    aiProductCards(items.slice(0, 4));
+    return;
+  }
+
+  // Fallback final
+  aiPush('bot', 'No encontré algo exacto con esa descripción 🤔 Probá con otra palabra, o elegí una opción:');
+  aiQuickReplies(['🏷️ Ver categorías', '🗣️ Hablar con un vendedor', '💳 Cómo pago']);
+}
+
+function aiSend() {
+  const input = document.getElementById('ai-input');
+  const texto = input.value.trim();
+  if (!texto) return;
+  aiPush('user', texto);
+  input.value = '';
+  aiTypingShow();
+  const delay = 450 + Math.min(600, texto.length * 12);
+  setTimeout(() => { aiTypingHide(); aiResponder(texto); }, delay);
+}
+
+// Aviso proactivo a los pocos segundos: reubica al usuario ofreciendo ayuda
+setTimeout(() => {
+  if (!document.getElementById('ai-panel').classList.contains('open')) {
+    document.getElementById('ai-hint').classList.add('show');
+    document.getElementById('ai-badge').classList.add('show');
+  }
+}, 6000);
+setTimeout(() => {
+  const hint = document.getElementById('ai-hint');
+  if (hint) hint.classList.remove('show');
+}, 18000);
 
 // INIT
 updateCartUI();
