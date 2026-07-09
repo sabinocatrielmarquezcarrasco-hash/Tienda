@@ -297,7 +297,7 @@ $("verifyCodeBtn").onclick = async () => {
 
 // ---------- Crear/leer doc de usuario (compartido entre plataformas, por eso NO lleva PLATFORM en la key) ----------
 async function ensureUserDoc(user){
-  const ref = doc(db, "users", user.uid);
+  const ref = doc(db, "marketUsers", user.uid);
   const snap = await getDoc(ref);
   if(!snap.exists()){
     const referralCode = user.uid.slice(0,8);
@@ -345,7 +345,7 @@ $("copyRefBtn").onclick = () => {
 
 // ---------- Ser vendedor ----------
 $("becomeSellerBtn").onclick = async () => {
-  const ref = doc(db, "users", currentUser.uid);
+  const ref = doc(db, "marketUsers", currentUser.uid);
   await updateDoc(ref, { isSeller: true });
   currentUserDoc.isSeller = true;
   const statsRef = doc(db,"stats",PLATFORM);
@@ -358,7 +358,7 @@ $("savePayBtn").onclick = async () => {
   const payAlias = $("payAlias").value.trim();
   const payMP = $("payMP").value.trim();
   const payCrypto = $("payCrypto").value.trim();
-  await updateDoc(doc(db,"users",currentUser.uid), { payAlias, payMP, payCrypto });
+  await updateDoc(doc(db,"marketUsers",currentUser.uid), { payAlias, payMP, payCrypto });
   currentUserDoc.payAlias = payAlias; currentUserDoc.payMP = payMP; currentUserDoc.payCrypto = payCrypto;
   $("savePayBtn").textContent = "¡Guardado!";
   setTimeout(()=> $("savePayBtn").textContent = "Guardar medios de cobro", 1500);
@@ -442,7 +442,7 @@ async function openCheckout(productId, snap){
   snap.forEach(d => { if(d.id === productId) product = d.data(); });
   if(!product) return;
 
-  const sellerSnap = await getDoc(doc(db, "users", product.ownerId));
+  const sellerSnap = await getDoc(doc(db, "marketUsers", product.ownerId));
   const seller = sellerSnap.exists() ? sellerSnap.data() : {};
 
   checkoutData = { productId, product, seller };
