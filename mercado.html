@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sabino Tech — Mercado de Vendedores</title>
+<style>
+  :root{
+    --bg:#0b0d12; --panel:#141822; --panel2:#1b2130; --accent:#7c5cff;
+    --accent2:#22d3a8; --text:#e8eaf0; --muted:#8b93a7; --danger:#ff5c7a;
+  }
+  *{box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;padding:16px;}
+  h1{font-size:20px;margin:0 0 4px;}
+  h3{margin-top:0;}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:20px;}
+  .card{background:var(--panel);border:1px solid #232838;border-radius:14px;padding:16px;margin-bottom:16px;}
+  input,textarea,select{width:100%;background:var(--panel2);border:1px solid #2b3244;color:var(--text);
+    padding:10px 12px;border-radius:10px;margin-bottom:10px;font-size:14px;}
+  button{background:var(--accent);color:#fff;border:none;padding:10px 16px;border-radius:10px;
+    font-weight:600;cursor:pointer;font-size:14px;}
+  button.secondary{background:var(--panel2);border:1px solid #2b3244;}
+  button.green{background:var(--accent2);color:#04241c;}
+  button:disabled{opacity:.5;cursor:not-allowed;}
+  .hidden{display:none !important;}
+  .row{display:flex;gap:8px;flex-wrap:wrap;}
+  .row>*{flex:1;}
+  .pill{display:inline-block;background:var(--panel2);border:1px solid #2b3244;border-radius:999px;
+    padding:4px 10px;font-size:12px;color:var(--muted);margin-right:6px;}
+  .product{background:var(--panel2);border-radius:12px;padding:12px;margin-bottom:10px;}
+  .product img{width:100%;max-height:160px;object-fit:cover;border-radius:8px;margin-bottom:8px;background:#000;}
+  .price{color:var(--accent2);font-weight:700;font-size:16px;}
+  .muted{color:var(--muted);font-size:12px;}
+  .msg{padding:6px 10px;border-radius:10px;margin-bottom:6px;max-width:80%;font-size:13px;}
+  .msg.me{background:var(--accent);margin-left:auto;}
+  .msg.other{background:var(--panel2);}
+  #recaptcha-container{margin:10px 0;}
+  .top-user{display:flex;justify-content:space-between;align-items:center;}
+  .link-box{background:#0e1420;border:1px dashed #2b3244;border-radius:8px;padding:8px 10px;font-size:12px;
+    color:var(--accent2);word-break:break-all;margin-top:6px;}
+  .stat{display:inline-block;background:#0e1420;border-radius:10px;padding:10px 14px;margin:4px;text-align:center;min-width:100px;}
+  .stat b{display:block;font-size:22px;color:var(--accent2);}
+  .stat span{font-size:11px;color:var(--muted);}
+  .payopt{background:#0e1420;border-radius:8px;padding:8px;margin-top:6px;font-size:13px;}
+</style>
+</head>
+<body>
+
+<h1>🛒 Sabino Tech — Mercado</h1>
+<div class="sub">Comprá, vendé y generá tu propio link de reventa. Verificación real por SMS.</div>
+
+<!-- ===== PANEL ADMIN (solo vos) ===== -->
+<div class="card hidden" id="adminCard">
+  <h3>📊 Panel — solo vos lo ves</h3>
+  <div id="statsBox"></div>
+</div>
+
+<!-- ===== BLOQUE 1: LOGIN / REGISTRO POR CELULAR ===== -->
+<div class="card" id="authCard">
+  <div id="step-phone">
+    <label class="muted">Tu número de celular (con código de país, ej: +5493511234567)</label>
+    <input type="tel" id="phoneInput" placeholder="+549...">
+    <div id="recaptcha-container"></div>
+    <button id="sendCodeBtn">Enviar código por SMS</button>
+  </div>
+
+  <div id="step-code" class="hidden">
+    <label class="muted">Ingresá el código de 6 dígitos que te llegó por SMS</label>
+    <input type="text" id="codeInput" maxlength="6" placeholder="123456">
+    <div class="row">
+      <button id="verifyCodeBtn">Verificar e ingresar</button>
+      <button class="secondary" id="backBtn">Volver</button>
+    </div>
+  </div>
+
+  <div id="step-loggedin" class="hidden">
+    <div class="top-user">
+      <div>
+        <b id="userPhoneLabel"></b>
+        <div class="muted" id="userStatusLabel">Comprador</div>
+      </div>
+      <button class="secondary" id="logoutBtn">Salir</button>
+    </div>
+
+    <div id="becomeSellerBox" class="hidden" style="margin-top:12px;">
+      <p class="muted">Todavía no sos vendedor. Activá tu perfil y generá tu link de reventa automáticamente.</p>
+      <button class="green" id="becomeSellerBtn">Quiero ser vendedor</button>
+    </div>
+
+    <div id="sellerInfoBox" class="hidden" style="margin-top:12px;">
+      <span class="pill">Vendedor activo</span>
+      <div class="muted">Tu link de reventa personal (se generó solo):</div>
+      <div class="link-box" id="referralLinkBox"></div>
+      <button class="secondary" id="copyRefBtn" style="margin-top:8px;">Copiar mi link</button>
+
+      <div style="margin-top:14px;">
+        <label class="muted">Tus medios de cobro (para que el comprador te pague directo)</label>
+        <input type="text" id="payAlias" placeholder="Alias / CBU bancario (opcional)">
+        <input type="text" id="payMP" placeholder="Link de pago de Mercado Pago (opcional)">
+        <input type="text" id="payCrypto" placeholder="Wallet cripto USDT/BTC/USDC (opcional)">
+        <button class="secondary" id="savePayBtn">Guardar medios de cobro</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BLOQUE 2: PUBLICAR PRODUCTO (solo vendedores) ===== -->
+<div class="card hidden" id="publishCard">
+  <h3>Publicar producto</h3>
+  <input type="text" id="pTitle" placeholder="Título del producto">
+  <input type="number" id="pPrice" placeholder="Precio en $">
+  <input type="text" id="pImg" placeholder="URL de la foto (link directo a imagen)">
+  <select id="pCategory">
+    <option value="Audio">Audio</option>
+    <option value="LED/Luces">LED/Luces</option>
+    <option value="Cables">Cables</option>
+    <option value="Herramientas">Herramientas</option>
+    <option value="Bici/Patin">Bici/Patín</option>
+    <option value="Cargadores">Cargadores</option>
+    <option value="Otro">Otro</option>
+  </select>
+  <textarea id="pDesc" placeholder="Descripción" rows="3"></textarea>
+  <button id="publishBtn">Publicar</button>
+</div>
+
+<!-- ===== BLOQUE 3: FEED DEL MERCADO ===== -->
+<div class="card">
+  <h3>Productos del mercado</h3>
+  <div class="muted" style="margin-bottom:10px;">Tuyos + de todos los vendedores registrados.</div>
+  <div id="feed"></div>
+</div>
+
+<!-- ===== BLOQUE 4: CHECKOUT / CONFIRMAR PEDIDO ===== -->
+<div class="card hidden" id="checkoutCard">
+  <h3>Confirmar pedido</h3>
+  <div id="checkoutProduct"></div>
+  <div id="checkoutPayOptions"></div>
+  <button id="confirmOrderBtn" style="margin-top:10px;">Ya pagué / confirmar pedido</button>
+</div>
+
+<!-- ===== BLOQUE 5: CHAT ===== -->
+<div class="card hidden" id="chatCard">
+  <h3>Chat con <span id="chatWithLabel"></span></h3>
+  <div id="chatMessages" style="max-height:260px;overflow-y:auto;margin-bottom:10px;"></div>
+  <div class="row">
+    <input type="text" id="chatInput" placeholder="Escribí un mensaje...">
+    <button id="sendChatBtn">Enviar</button>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+import {
+  getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc,
+  query, orderBy, onSnapshot, serverTimestamp, increment
+} from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+// Config real de tu proyecto Firebase (TuKompa / Sabino Tech)
+const firebaseConfig = {
+  apiKey: "AIzaSyCO5hNAkEaFq0Hqs8iBJD1gkVM3hFbpv2g",
+  authDomain: "tukompa-9b4c9.firebaseapp.com",
+  projectId: "tukompa-9b4c9",
+  storageBucket: "tukompa-9b4c9.firebasestorage.app",
+  messagingSenderId: "66913833177",
+  appId: "1:66913833177:web:f00203bf49246f7dbeaec8"
+};
+
+// ⚠️ EDITÁ ESTO: poné tu(s) número(s) real(es), formato +549... — así solo vos ves el panel admin
+const ADMIN_PHONES = ["+5490000000000"];
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let confirmationResult = null;
+let currentUser = null;
+let currentUserDoc = null;
+let chatUnsub = null;
+let checkoutData = null;
+
+window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "normal" });
+
+const $ = (id) => document.getElementById(id);
+function show(id){ $(id).classList.remove("hidden"); }
+function hide(id){ $(id).classList.add("hidden"); }
+
+// ---------- Contador de visitas (real, en Firestore) ----------
+async function trackVisit(){
+  const statsRef = doc(db, "stats", "global");
+  const snap = await getDoc(statsRef);
+  if(!snap.exists()){
+    await setDoc(statsRef, { totalVisits:1, uniqueVisitors:1, totalUsers:0, totalSellers:0, totalOrders:0 });
+  } else {
+    await updateDoc(statsRef, { totalVisits: increment(1) });
+  }
+  if(!localStorage.getItem("st_visited")){
+    localStorage.setItem("st_visited", "1");
+    await updateDoc(statsRef, { uniqueVisitors: increment(1) });
+  }
+}
+trackVisit();
+
+function watchStats(){
+  const statsRef = doc(db, "stats", "global");
+  onSnapshot(statsRef, (snap) => {
+    if(!snap.exists()) return;
+    const s = snap.data();
+    $("statsBox").innerHTML = `
+      <div class="stat"><b>${s.totalVisits||0}</b><span>Visitas totales</span></div>
+      <div class="stat"><b>${s.uniqueVisitors||0}</b><span>Personas únicas</span></div>
+      <div class="stat"><b>${s.totalUsers||0}</b><span>Usuarios registrados</span></div>
+      <div class="stat"><b>${s.totalSellers||0}</b><span>Vendedores</span></div>
+      <div class="stat"><b>${s.totalOrders||0}</b><span>Pedidos confirmados</span></div>
+    `;
+  });
+}
+
+// ---------- PASO 1: enviar código SMS ----------
+$("sendCodeBtn").onclick = async () => {
+  const phone = $("phoneInput").value.trim();
+  if(!phone.startsWith("+")){ alert("Poné el número con código de país, ej: +5493511234567"); return; }
+  $("sendCodeBtn").disabled = true; $("sendCodeBtn").textContent = "Enviando...";
+  try{
+    confirmationResult = await signInWithPhoneNumber(auth, phone, window.recaptchaVerifier);
+    hide("step-phone"); show("step-code");
+  }catch(err){
+    alert("No se pudo enviar el código: " + err.message);
+  }finally{
+    $("sendCodeBtn").disabled = false; $("sendCodeBtn").textContent = "Enviar código por SMS";
+  }
+};
+$("backBtn").onclick = () => { hide("step-code"); show("step-phone"); };
+
+// ---------- PASO 2: verificar código ----------
+$("verifyCodeBtn").onclick = async () => {
+  const code = $("codeInput").value.trim();
+  if(!confirmationResult){ alert("Pedí el código primero."); return; }
+  try{
+    const result = await confirmationResult.confirm(code);
+    currentUser = result.user;
+    await ensureUserDoc(currentUser);
+  }catch(err){
+    alert("Código incorrecto: " + err.message);
+  }
+};
+
+// ---------- Crear/leer doc de usuario ----------
+async function ensureUserDoc(user){
+  const ref = doc(db, "users", user.uid);
+  const snap = await getDoc(ref);
+  if(!snap.exists()){
+    const referralCode = user.uid.slice(0,8);
+    await setDoc(ref, {
+      phone: user.phoneNumber, isSeller:false, referralCode,
+      payAlias:"", payMP:"", payCrypto:"", createdAt: serverTimestamp()
+    });
+    currentUserDoc = { phone:user.phoneNumber, isSeller:false, referralCode, payAlias:"", payMP:"", payCrypto:"" };
+    const statsRef = doc(db,"stats","global");
+    const s = await getDoc(statsRef);
+    if(s.exists()) await updateDoc(statsRef, { totalUsers: increment(1) });
+  } else {
+    currentUserDoc = snap.data();
+  }
+  renderLoggedIn();
+
+  if(ADMIN_PHONES.includes(user.phoneNumber)){
+    show("adminCard");
+    watchStats();
+  }
+}
+
+function renderLoggedIn(){
+  hide("step-phone"); hide("step-code"); show("step-loggedin");
+  $("userPhoneLabel").textContent = currentUser.phoneNumber;
+  if(currentUserDoc.isSeller){
+    $("userStatusLabel").textContent = "Vendedor";
+    hide("becomeSellerBox"); show("sellerInfoBox"); show("publishCard");
+    const link = `${location.origin}${location.pathname.replace("mercado.html","")}?ref=${currentUserDoc.referralCode}`;
+    $("referralLinkBox").textContent = link;
+    $("payAlias").value = currentUserDoc.payAlias || "";
+    $("payMP").value = currentUserDoc.payMP || "";
+    $("payCrypto").value = currentUserDoc.payCrypto || "";
+  } else {
+    $("userStatusLabel").textContent = "Comprador";
+    show("becomeSellerBox"); hide("sellerInfoBox"); hide("publishCard");
+  }
+}
+
+$("copyRefBtn").onclick = () => {
+  navigator.clipboard.writeText($("referralLinkBox").textContent);
+  $("copyRefBtn").textContent = "¡Copiado!";
+  setTimeout(()=> $("copyRefBtn").textContent = "Copiar mi link", 1500);
+};
+
+// ---------- Ser vendedor ----------
+$("becomeSellerBtn").onclick = async () => {
+  const ref = doc(db, "users", currentUser.uid);
+  await updateDoc(ref, { isSeller: true });
+  currentUserDoc.isSeller = true;
+  const statsRef = doc(db,"stats","global");
+  await updateDoc(statsRef, { totalSellers: increment(1) });
+  renderLoggedIn();
+};
+
+// ---------- Guardar medios de cobro ----------
+$("savePayBtn").onclick = async () => {
+  const payAlias = $("payAlias").value.trim();
+  const payMP = $("payMP").value.trim();
+  const payCrypto = $("payCrypto").value.trim();
+  await updateDoc(doc(db,"users",currentUser.uid), { payAlias, payMP, payCrypto });
+  currentUserDoc.payAlias = payAlias; currentUserDoc.payMP = payMP; currentUserDoc.payCrypto = payCrypto;
+  $("savePayBtn").textContent = "¡Guardado!";
+  setTimeout(()=> $("savePayBtn").textContent = "Guardar medios de cobro", 1500);
+};
+
+// ---------- Logout ----------
+$("logoutBtn").onclick = async () => {
+  await signOut(auth);
+  currentUser = null; currentUserDoc = null;
+  hide("step-loggedin"); hide("publishCard"); hide("chatCard"); hide("checkoutCard"); hide("adminCard");
+  show("step-phone");
+  $("phoneInput").value = ""; $("codeInput").value = "";
+};
+
+// ---------- Publicar producto ----------
+$("publishBtn").onclick = async () => {
+  const title = $("pTitle").value.trim();
+  const price = parseFloat($("pPrice").value);
+  const img = $("pImg").value.trim();
+  const category = $("pCategory").value;
+  const desc = $("pDesc").value.trim();
+  if(!title || !price){ alert("Completá al menos título y precio."); return; }
+
+  await addDoc(collection(db, "products"), {
+    title, price, img, category, desc,
+    ownerId: currentUser.uid, ownerPhone: currentUser.phoneNumber,
+    referralCode: currentUserDoc.referralCode, createdAt: serverTimestamp()
+  });
+  $("pTitle").value=""; $("pPrice").value=""; $("pImg").value=""; $("pDesc").value="";
+  alert("Producto publicado.");
+};
+
+// ---------- Feed en vivo ----------
+const feedQuery = query(collection(db, "products"), orderBy("createdAt","desc"));
+onSnapshot(feedQuery, (snap) => {
+  const feed = $("feed");
+  feed.innerHTML = "";
+  snap.forEach(docSnap => {
+    const p = docSnap.data();
+    const id = docSnap.id;
+    const div = document.createElement("div");
+    div.className = "product";
+    const shareLink = `${location.origin}${location.pathname.replace("mercado.html","")}?ref=${p.referralCode}&pid=${id}`;
+    div.innerHTML = `
+      ${p.img ? `<img src="${p.img}" onerror="this.style.display='none'">` : ""}
+      <div class="price">$${Number(p.price).toLocaleString("es-AR")}</div>
+      <b>${p.title}</b>
+      <div class="muted">${p.category || ""}</div>
+      <p style="font-size:13px;">${p.desc || ""}</p>
+      <div class="muted">Vendedor: ${p.ownerPhone || "—"}</div>
+      <div class="row" style="margin-top:8px;">
+        <button class="green buy-btn" data-id="${id}">Comprar</button>
+        <button class="secondary chat-btn" data-id="${id}" data-owner="${p.ownerId}" data-ownerphone="${p.ownerPhone}">Chatear</button>
+        <button class="secondary share-btn" data-link="${shareLink}">Mi link</button>
+      </div>
+    `;
+    feed.appendChild(div);
+  });
+
+  feed.querySelectorAll(".chat-btn").forEach(btn=>{
+    btn.onclick = () => openChat(btn.dataset.id, btn.dataset.owner, btn.dataset.ownerphone);
+  });
+  feed.querySelectorAll(".share-btn").forEach(btn=>{
+    btn.onclick = () => {
+      navigator.clipboard.writeText(btn.dataset.link);
+      btn.textContent = "¡Copiado!";
+      setTimeout(()=>btn.textContent="Mi link", 1500);
+    };
+  });
+  feed.querySelectorAll(".buy-btn").forEach(btn=>{
+    btn.onclick = () => openCheckout(btn.dataset.id, snap);
+  });
+});
+
+// ---------- Checkout con medios de cobro del vendedor ----------
+async function openCheckout(productId, snap){
+  if(!currentUser){ alert("Iniciá sesión para comprar."); return; }
+  let product = null, productDocId = productId;
+  snap.forEach(d => { if(d.id === productId) product = d.data(); });
+  if(!product) return;
+
+  const sellerSnap = await getDoc(doc(db, "users", product.ownerId));
+  const seller = sellerSnap.exists() ? sellerSnap.data() : {};
+
+  checkoutData = { productId, product, seller };
+  show("checkoutCard");
+  $("checkoutProduct").innerHTML = `<b>${product.title}</b> — $${Number(product.price).toLocaleString("es-AR")}`;
+
+  let opts = "";
+  if(seller.payAlias) opts += `<div class="payopt">💵 Transferencia — Alias: <b>${seller.payAlias}</b></div>`;
+  if(seller.payMP) opts += `<div class="payopt">🔵 Mercado Pago — <a href="${seller.payMP}" target="_blank" style="color:var(--accent2)">${seller.payMP}</a></div>`;
+  if(seller.payCrypto) opts += `<div class="payopt">₿ Cripto (USDT/BTC/USDC) — Wallet: <b>${seller.payCrypto}</b></div>`;
+  if(!opts) opts = `<div class="payopt muted">Este vendedor todavía no cargó medios de cobro. Coordiná por el chat.</div>`;
+  $("checkoutPayOptions").innerHTML = opts;
+
+  $("checkoutCard").scrollIntoView({behavior:"smooth"});
+}
+
+$("confirmOrderBtn").onclick = async () => {
+  if(!checkoutData) return;
+  const { productId, product, seller } = checkoutData;
+  await addDoc(collection(db, "orders"), {
+    productId, productTitle: product.title, price: product.price,
+    buyerId: currentUser.uid, buyerPhone: currentUser.phoneNumber,
+    sellerId: product.ownerId, sellerPhone: product.ownerPhone,
+    status: "pendiente_confirmacion_vendedor", createdAt: serverTimestamp()
+  });
+  const statsRef = doc(db, "stats", "global");
+  await updateDoc(statsRef, { totalOrders: increment(1) });
+  alert("Pedido confirmado. Avisale al vendedor por el chat que ya pagaste.");
+  openChat(productId, product.ownerId, product.ownerPhone);
+  hide("checkoutCard");
+};
+
+// ---------- Chat ----------
+function openChat(productId, ownerId, ownerPhone){
+  if(!currentUser){ alert("Iniciá sesión para chatear."); return; }
+  const chatId = [currentUser.uid, ownerId, productId].sort().join("_");
+  show("chatCard");
+  $("chatWithLabel").textContent = ownerPhone || "vendedor";
+
+  if(chatUnsub) chatUnsub();
+  const msgsRef = collection(db, "chats", chatId, "messages");
+  const q = query(msgsRef, orderBy("createdAt","asc"));
+  chatUnsub = onSnapshot(q, (snap) => {
+    const box = $("chatMessages");
+    box.innerHTML = "";
+    snap.forEach(d => {
+      const m = d.data();
+      const div = document.createElement("div");
+      div.className = "msg " + (m.senderId === currentUser.uid ? "me" : "other");
+      div.textContent = m.text;
+      box.appendChild(div);
+    });
+    box.scrollTop = box.scrollHeight;
+  });
+
+  $("sendChatBtn").onclick = async () => {
+    const text = $("chatInput").value.trim();
+    if(!text) return;
+    await addDoc(msgsRef, { text, senderId: currentUser.uid, createdAt: serverTimestamp() });
+    $("chatInput").value = "";
+  };
+}
+
+// ---------- Link de referido en la URL ----------
+const params = new URLSearchParams(location.search);
+const refCode = params.get("ref");
+if(refCode) sessionStorage.setItem("refCode", refCode);
+
+// ---------- Estado de sesión persistente ----------
+onAuthStateChanged(auth, async (user) => {
+  if(user){ currentUser = user; await ensureUserDoc(user); }
+});
+</script>
+</body>
+</html>
