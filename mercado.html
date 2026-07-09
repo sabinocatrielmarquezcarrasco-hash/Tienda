@@ -13,7 +13,8 @@
   body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;padding:16px;}
   h1{font-size:20px;margin:0 0 4px;}
   h3{margin-top:0;}
-  .sub{color:var(--muted);font-size:13px;margin-bottom:20px;}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:8px;}
+  .locbar{background:linear-gradient(90deg,#2b2160,#0f5f52);border-radius:10px;padding:8px 12px;font-size:13px;margin-bottom:16px;}
   .card{background:var(--panel);border:1px solid #232838;border-radius:14px;padding:16px;margin-bottom:16px;}
   input,textarea,select{width:100%;background:var(--panel2);border:1px solid #2b3244;color:var(--text);
     padding:10px 12px;border-radius:10px;margin-bottom:10px;font-size:14px;}
@@ -48,6 +49,7 @@
 
 <h1>🛒 Sabino Tech — Mercado</h1>
 <div class="sub">Comprá, vendé y generá tu propio link de reventa. Verificación real por SMS.</div>
+<div class="locbar" id="locBar">📍 Detectando tu ubicación...</div>
 
 <!-- ===== PANEL ADMIN (solo vos) ===== -->
 <div class="card hidden" id="adminCard">
@@ -120,7 +122,8 @@
     <option value="Otro">Otro</option>
   </select>
   <textarea id="pDesc" placeholder="Descripción" rows="3"></textarea>
-  <button id="publishBtn">Publicar</button>
+  <div class="muted" id="publishLocLabel">Se publicará con tu ubicación detectada.</div>
+  <button id="publishBtn" style="margin-top:8px;">Publicar</button>
 </div>
 
 <!-- ===== BLOQUE 3: FEED DEL MERCADO ===== -->
@@ -155,10 +158,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc,
-  query, orderBy, onSnapshot, serverTimestamp, increment
+  query, orderBy, where, onSnapshot, serverTimestamp, increment
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
-// Config real de tu proyecto Firebase (TuKompa / Sabino Tech)
+// Config real de tu proyecto Firebase (compartido entre Sabino Tech y TuKompa)
 const firebaseConfig = {
   apiKey: "AIzaSyCO5hNAkEaFq0Hqs8iBJD1gkVM3hFbpv2g",
   authDomain: "tukompa-9b4c9.firebaseapp.com",
@@ -168,8 +171,13 @@ const firebaseConfig = {
   appId: "1:66913833177:web:f00203bf49246f7dbeaec8"
 };
 
-// ⚠️ EDITÁ ESTO: poné tu(s) número(s) real(es), formato +549... — así solo vos ves el panel admin
+// ⚠️ EDITÁ ESTO con tu número real (formato +549...)
 const ADMIN_PHONES = ["+5490000000000"];
+
+// Clave para separar contenido entre Sabino Tech y TuKompa dentro del MISMO proyecto Firebase.
+// Los usuarios (login por teléfono) se comparten entre las dos plataformas.
+// Los productos, pedidos y stats quedan filtrados por esta etiqueta para no mezclarse.
+const PLATFORM = "sabinotech"; // en TuKompa este valor debe ser "tukompa"
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
@@ -180,6 +188,7 @@ let currentUser = null;
 let currentUserDoc = null;
 let chatUnsub = null;
 let checkoutData = null;
+let userCity = "Ubicación no detectada";
 
 window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "normal" });
 
@@ -187,24 +196,63 @@ const $ = (id) => document.getElementById(id);
 function show(id){ $(id).classList.remove("hidden"); }
 function hide(id){ $(id).classList.add("hidden"); }
 
-// ---------- Contador de visitas (real, en Firestore) ----------
+// ---------- Ubicación automática real (GPS del navegador, con fallback por IP) ----------
+async function reverseGeocode(lat, lon){
+  try{
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`);
+    const data = await res.json();
+    const a = data.address || {};
+    return a.city || a.town || a.village || a.state || "Tu zona";
+  }catch(e){ return "Tu zona"; }
+}
+
+async function detectLocationByIP(){
+  try{
+    const res = await fetch("https://ipapi.co/json/");
+    const data = await res.json();
+    return `${data.city || ""}${data.city && data.region ? ", " : ""}${data.region || ""}` || "Tu zona";
+  }catch(e){ return "Tu zona"; }
+}
+
+function detectLocation(){
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const city = await reverseGeocode(pos.coords.latitude, pos.coords.longitude);
+      userCity = city;
+      updateLocBar();
+    }, async () => {
+      userCity = await detectLocationByIP();
+      updateLocBar();
+    }, { timeout: 6000 });
+  } else {
+    detectLocationByIP().then(city => { userCity = city; updateLocBar(); });
+  }
+}
+
+function updateLocBar(){
+  $("locBar").textContent = `📍 Mostrando productos y armando tus publicaciones desde: ${userCity}`;
+  $("publishLocLabel").textContent = `Se publicará con tu ubicación: ${userCity}`;
+}
+detectLocation();
+
+// ---------- Contador de visitas (separado por plataforma) ----------
 async function trackVisit(){
-  const statsRef = doc(db, "stats", "global");
+  const statsRef = doc(db, "stats", PLATFORM);
   const snap = await getDoc(statsRef);
   if(!snap.exists()){
     await setDoc(statsRef, { totalVisits:1, uniqueVisitors:1, totalUsers:0, totalSellers:0, totalOrders:0 });
   } else {
     await updateDoc(statsRef, { totalVisits: increment(1) });
   }
-  if(!localStorage.getItem("st_visited")){
-    localStorage.setItem("st_visited", "1");
+  if(!localStorage.getItem("st_visited_"+PLATFORM)){
+    localStorage.setItem("st_visited_"+PLATFORM, "1");
     await updateDoc(statsRef, { uniqueVisitors: increment(1) });
   }
 }
 trackVisit();
 
 function watchStats(){
-  const statsRef = doc(db, "stats", "global");
+  const statsRef = doc(db, "stats", PLATFORM);
   onSnapshot(statsRef, (snap) => {
     if(!snap.exists()) return;
     const s = snap.data();
@@ -247,7 +295,7 @@ $("verifyCodeBtn").onclick = async () => {
   }
 };
 
-// ---------- Crear/leer doc de usuario ----------
+// ---------- Crear/leer doc de usuario (compartido entre plataformas, por eso NO lleva PLATFORM en la key) ----------
 async function ensureUserDoc(user){
   const ref = doc(db, "users", user.uid);
   const snap = await getDoc(ref);
@@ -258,7 +306,7 @@ async function ensureUserDoc(user){
       payAlias:"", payMP:"", payCrypto:"", createdAt: serverTimestamp()
     });
     currentUserDoc = { phone:user.phoneNumber, isSeller:false, referralCode, payAlias:"", payMP:"", payCrypto:"" };
-    const statsRef = doc(db,"stats","global");
+    const statsRef = doc(db,"stats",PLATFORM);
     const s = await getDoc(statsRef);
     if(s.exists()) await updateDoc(statsRef, { totalUsers: increment(1) });
   } else {
@@ -300,7 +348,7 @@ $("becomeSellerBtn").onclick = async () => {
   const ref = doc(db, "users", currentUser.uid);
   await updateDoc(ref, { isSeller: true });
   currentUserDoc.isSeller = true;
-  const statsRef = doc(db,"stats","global");
+  const statsRef = doc(db,"stats",PLATFORM);
   await updateDoc(statsRef, { totalSellers: increment(1) });
   renderLoggedIn();
 };
@@ -325,7 +373,7 @@ $("logoutBtn").onclick = async () => {
   $("phoneInput").value = ""; $("codeInput").value = "";
 };
 
-// ---------- Publicar producto ----------
+// ---------- Publicar producto (con ubicación real y etiqueta de plataforma) ----------
 $("publishBtn").onclick = async () => {
   const title = $("pTitle").value.trim();
   const price = parseFloat($("pPrice").value);
@@ -336,15 +384,17 @@ $("publishBtn").onclick = async () => {
 
   await addDoc(collection(db, "products"), {
     title, price, img, category, desc,
+    city: userCity,
+    platform: PLATFORM,
     ownerId: currentUser.uid, ownerPhone: currentUser.phoneNumber,
     referralCode: currentUserDoc.referralCode, createdAt: serverTimestamp()
   });
   $("pTitle").value=""; $("pPrice").value=""; $("pImg").value=""; $("pDesc").value="";
-  alert("Producto publicado.");
+  alert("Producto publicado desde " + userCity + ".");
 };
 
-// ---------- Feed en vivo ----------
-const feedQuery = query(collection(db, "products"), orderBy("createdAt","desc"));
+// ---------- Feed en vivo (filtrado SOLO por esta plataforma) ----------
+const feedQuery = query(collection(db, "products"), where("platform","==",PLATFORM), orderBy("createdAt","desc"));
 onSnapshot(feedQuery, (snap) => {
   const feed = $("feed");
   feed.innerHTML = "";
@@ -358,7 +408,7 @@ onSnapshot(feedQuery, (snap) => {
       ${p.img ? `<img src="${p.img}" onerror="this.style.display='none'">` : ""}
       <div class="price">$${Number(p.price).toLocaleString("es-AR")}</div>
       <b>${p.title}</b>
-      <div class="muted">${p.category || ""}</div>
+      <div class="muted">${p.category || ""} · 📍 ${p.city || "Ubicación no informada"}</div>
       <p style="font-size:13px;">${p.desc || ""}</p>
       <div class="muted">Vendedor: ${p.ownerPhone || "—"}</div>
       <div class="row" style="margin-top:8px;">
@@ -388,7 +438,7 @@ onSnapshot(feedQuery, (snap) => {
 // ---------- Checkout con medios de cobro del vendedor ----------
 async function openCheckout(productId, snap){
   if(!currentUser){ alert("Iniciá sesión para comprar."); return; }
-  let product = null, productDocId = productId;
+  let product = null;
   snap.forEach(d => { if(d.id === productId) product = d.data(); });
   if(!product) return;
 
@@ -397,7 +447,7 @@ async function openCheckout(productId, snap){
 
   checkoutData = { productId, product, seller };
   show("checkoutCard");
-  $("checkoutProduct").innerHTML = `<b>${product.title}</b> — $${Number(product.price).toLocaleString("es-AR")}`;
+  $("checkoutProduct").innerHTML = `<b>${product.title}</b> — $${Number(product.price).toLocaleString("es-AR")} · 📍 ${product.city||""}`;
 
   let opts = "";
   if(seller.payAlias) opts += `<div class="payopt">💵 Transferencia — Alias: <b>${seller.payAlias}</b></div>`;
@@ -411,14 +461,15 @@ async function openCheckout(productId, snap){
 
 $("confirmOrderBtn").onclick = async () => {
   if(!checkoutData) return;
-  const { productId, product, seller } = checkoutData;
+  const { productId, product } = checkoutData;
   await addDoc(collection(db, "orders"), {
+    platform: PLATFORM,
     productId, productTitle: product.title, price: product.price,
     buyerId: currentUser.uid, buyerPhone: currentUser.phoneNumber,
     sellerId: product.ownerId, sellerPhone: product.ownerPhone,
     status: "pendiente_confirmacion_vendedor", createdAt: serverTimestamp()
   });
-  const statsRef = doc(db, "stats", "global");
+  const statsRef = doc(db, "stats", PLATFORM);
   await updateDoc(statsRef, { totalOrders: increment(1) });
   alert("Pedido confirmado. Avisale al vendedor por el chat que ya pagaste.");
   openChat(productId, product.ownerId, product.ownerPhone);
