@@ -6,6 +6,25 @@
   <title>Sabino Tech — Tienda</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- ============================================================
+       META PIXEL (Facebook Ads) — CONFIGURAR ANTES DE USAR
+       1. Entrá a Meta Events Manager -> business.facebook.com/events_manager
+       2. Creá un Pixel (o usá el que ya tenga tu cuenta de anuncios)
+       3. Copiá el "Pixel ID" (número) y reemplazá TU_PIXEL_ID_AQUI abajo
+       Mientras no lo configures, este código no hace nada (no rompe la página).
+  ============================================================ -->
+  <script>
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', 'TU_PIXEL_ID_AQUI');
+    fbq('track', 'PageView');
+  </script>
+  <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=TU_PIXEL_ID_AQUI&ev=PageView&noscript=1" /></noscript>
   <style>
     :root {
       --bg: #0a0a0f;
@@ -445,14 +464,197 @@
       .ai-fab { right: 16px; bottom: 16px; }
       .ai-bubble-hint { right: 16px; bottom: 84px; max-width: 180px; }
     }
+
+    /* ===== MARKETING / DIFUSIÓN ===== */
+    .btn-fb {
+      background: #1877F2; color: #fff;
+      border: none; border-radius: 8px; padding: 8px 10px;
+      font-size: 14px; cursor: pointer; transition: background .2s;
+    }
+    .btn-fb:hover { background: #145dc4; }
+    .btn-copy {
+      background: var(--surface2); color: var(--text); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 10px; font-size: 14px; cursor: pointer; transition: border-color .2s;
+    }
+    .btn-copy:hover { border-color: var(--accent2); }
+    .btn-mkhub {
+      background: linear-gradient(90deg, #1877F2, var(--accent));
+      color: #fff; border: none; border-radius: 10px; padding: 10px 16px;
+      font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-mkhub:hover { filter: brightness(1.1); }
+
+    #mk-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 998;
+    }
+    #mk-overlay.open { display: block; }
+    #mk-modal {
+      display: none; position: fixed; z-index: 999; top: 3vh; left: 50%; transform: translateX(-50%);
+      width: min(920px, 94vw); height: 94vh; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius); flex-direction: column; overflow: hidden;
+    }
+    #mk-modal.open { display: flex; }
+    .mk-header {
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 16px 20px; background: linear-gradient(90deg, #1877F2, var(--accent));
+      flex-shrink: 0;
+    }
+    .mk-header h2 { font-size: 17px; font-family: 'Space Grotesk', sans-serif; }
+    .mk-header button { background: rgba(255,255,255,.2); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 15px; }
+    .mk-body { flex: 1; overflow-y: auto; padding: 16px 20px; }
+    .mk-instructions {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; font-size: 12.5px; color: var(--muted); margin-bottom: 16px; line-height: 1.6;
+    }
+    .mk-instructions b { color: var(--text); }
+    .mk-instructions summary { cursor: pointer; color: var(--accent2); font-weight: 600; font-size: 13px; margin-bottom: 6px; }
+    .mk-toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+    .mk-toolbar input {
+      flex: 1; min-width: 160px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 12px; color: var(--text); font-size: 13px;
+    }
+    .mk-toolbar button {
+      background: var(--surface2); border: 1px solid var(--border); color: var(--text);
+      border-radius: 8px; padding: 8px 12px; font-size: 12.5px; cursor: pointer; white-space: nowrap;
+    }
+    .mk-toolbar button:hover { border-color: var(--accent2); }
+    .mk-item {
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+      padding: 14px; margin-bottom: 14px;
+    }
+    .mk-item-top { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+    .mk-item-top img { width: 44px; height: 44px; object-fit: contain; background: #fff; border-radius: 6px; flex-shrink: 0; }
+    .mk-item-name { font-size: 13px; font-weight: 600; flex: 1; }
+    .mk-item-price { font-size: 12.5px; color: var(--price); font-weight: 700; }
+    .mk-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
+    .mk-tab {
+      background: transparent; border: 1px solid var(--border); color: var(--muted);
+      border-radius: 6px; padding: 5px 10px; font-size: 11.5px; cursor: pointer;
+    }
+    .mk-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .mk-text {
+      width: 100%; min-height: 130px; background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px; color: var(--text); font-size: 12.5px; line-height: 1.5;
+      font-family: 'Inter', sans-serif; resize: vertical;
+    }
+    .mk-item-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+    .mk-item-actions button {
+      border: none; border-radius: 6px; padding: 6px 10px; font-size: 11.5px; cursor: pointer; font-weight: 600;
+    }
+    .mk-item-actions .mk-copy { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .mk-item-actions .mk-fb { background: #1877F2; color: #fff; }
+    .mk-item-actions .mk-regen { background: var(--surface); color: var(--accent2); border: 1px solid var(--border); }
+    #mk-loadmore {
+      display: block; width: 100%; padding: 12px; background: var(--surface2); border: 1px dashed var(--border);
+      border-radius: 8px; color: var(--muted); cursor: pointer; font-size: 13px; margin-top: 4px;
+    }
+    #mk-loadmore:hover { border-color: var(--accent2); color: var(--accent2); }
+
+    /* ---- Menú de compartir multi-plataforma (popover) ---- */
+    #share-menu {
+      display: none; position: absolute; z-index: 1100; background: var(--surface2);
+      border: 1px solid var(--border); border-radius: 10px; padding: 8px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      min-width: 170px;
+    }
+    #share-menu.open { display: block; }
+    #share-menu button {
+      display: flex; align-items: center; gap: 8px; width: 100%; background: transparent; border: none;
+      color: var(--text); padding: 8px 10px; border-radius: 6px; cursor: pointer; font-size: 13px; text-align: left;
+    }
+    #share-menu button:hover { background: var(--surface); }
+
+    /* ---- Selección para combo (máx. 12) ---- */
+    .mk-select-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+    .mk-select-wrap input { width: 16px; height: 16px; }
+    #mk-selection-bar {
+      position: sticky; top: 0; z-index: 5; background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 10px 14px; margin-bottom: 14px; display: flex; align-items: center;
+      gap: 10px; flex-wrap: wrap;
+    }
+    #mk-selection-bar strong { color: var(--accent2); }
+    #mk-combo-result { display: none; margin-top: 10px; }
+    #mk-combo-result.open { display: block; }
+
+    /* ---- Banner / Modal de Vendedores (Programa de Afiliados) ---- */
+    #reseller-banner {
+      display: none; align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+      background: linear-gradient(90deg, #ff9f43, #ee5a24); color: #fff; padding: 8px 16px; font-size: 12.5px; font-weight: 600;
+    }
+    #reseller-banner.show { display: flex; }
+    #reseller-banner button {
+      background: rgba(255,255,255,.25); border: none; color: #fff; border-radius: 6px; padding: 3px 10px; cursor: pointer; font-size: 11.5px;
+    }
+    .btn-reseller {
+      background: linear-gradient(90deg, #ff9f43, #ee5a24); color: #fff; border: none; border-radius: 10px;
+      padding: 10px 16px; font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-reseller:hover { filter: brightness(1.1); }
+    #rs-overlay {
+      display: none; position: fixed; inset: 0; background: rgba(0,0,0,.7); z-index: 998;
+    }
+    #rs-overlay.open { display: block; }
+    #rs-modal {
+      display: none; position: fixed; z-index: 999; top: 8vh; left: 50%; transform: translateX(-50%);
+      width: min(480px, 92vw); max-height: 84vh; overflow-y: auto; background: var(--surface);
+      border: 1px solid var(--border); border-radius: var(--radius); flex-direction: column;
+    }
+    #rs-modal.open { display: flex; }
+    .rs-body { padding: 18px 20px; }
+    .rs-body label { font-size: 12.5px; color: var(--muted); display: block; margin: 12px 0 6px; }
+    .rs-body input {
+      width: 100%; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 12px; color: var(--text); font-size: 13px;
+    }
+    .rs-body .btn-add { width: 100%; margin-top: 16px; padding: 12px; font-size: 13.5px; }
+    #rs-result { display: none; margin-top: 16px; background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+    #rs-result.open { display: block; }
+    #rs-link { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px; color: var(--accent2); font-size: 12px; margin-bottom: 8px; word-break: break-all; }
   </style>
 </head>
 <body>
+
+<!-- ============================================================
+     MESSENGER CHAT PLUGIN — CONFIGURAR ANTES DE USAR
+     Esto hace que los mensajes escritos acá lleguen directo a la
+     bandeja de entrada de tu Página de Facebook (Meta Business Suite).
+     Pasos:
+     1. Necesitás una Página de Facebook (no perfil personal).
+     2. Entrá a business.facebook.com -> tu Página -> Configuración -> Messenger
+        -> "Chat plugin de Facebook" y agregá este sitio (tu dominio) como
+        dominio permitido en "Whitelisted Domains".
+     3. Reemplazá TU_PAGE_ID_AQUI por el ID numérico de tu Página
+        (lo ves en Configuración -> Información de la Página, o en
+        business.facebook.com -> Página -> "Acerca de").
+     4. Guardá y listo: los mensajes de acá van a Meta Business Suite / Bandeja
+        de entrada de tu Página, donde los respondés vos como siempre.
+============================================================ -->
+<div id="fb-root"></div>
+<div id="fb-customer-chat" class="fb-customerchat"
+     attribution="setup_tool"
+     page_id="TU_PAGE_ID_AQUI"
+     theme_color="#6c47ff"
+     logged_in_greeting="¡Hola! 👋 Soy Sabino Tech, contame qué buscás."
+     logged_out_greeting="¡Hola! 👋 Soy Sabino Tech, contame qué buscás.">
+</div>
+<script>
+  window.fbAsyncInit = function() {
+    if (typeof FB === 'undefined') return;
+    FB.init({ xfbml: true, version: 'v19.0' });
+  };
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = 'https://connect.facebook.net/es_LA/sdk/xfbml.customerchat.js';
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+</script>
 
 <div class="banner">
   🚀 Productos directo de Buenos Aires · Pedido por WhatsApp · Precios actualizados
   <a href="https://wa.me/542664838880" target="_blank">➜ Contactar ahora</a>
 </div>
+<div id="reseller-banner"></div>
 
 <header>
   <div class="header-inner">
@@ -471,6 +673,12 @@
       </select>
       <button class="cart-btn" onclick="toggleCart()">
         🛒 Carrito <span id="cart-count">0</span>
+      </button>
+      <button class="btn-mkhub" onclick="openMarketingHub()">
+        📣 Difusión
+      </button>
+      <button class="btn-reseller" onclick="openResellerModal()">
+        🤝 Vendedores
       </button>
     </div>
   </div>
@@ -566,6 +774,84 @@
   </div>
 </div>
 
+<!-- ===== CENTRO DE DIFUSIÓN (Marketing Hub) ===== -->
+<div id="mk-overlay" onclick="closeMarketingHub()"></div>
+<div id="mk-modal">
+  <div class="mk-header">
+    <h2>📣 Centro de Difusión — Facebook &amp; Meta Ads</h2>
+    <button onclick="closeMarketingHub()">✕</button>
+  </div>
+  <div class="mk-body">
+    <details class="mk-instructions" open>
+      <summary>ℹ️ Cómo funciona esto (leer antes de usar)</summary>
+      <b>Publicar en grupos de Facebook:</b> Facebook no permite que ningún botón externo publique automáticamente en un grupo (lo bloquean para evitar spam). El flujo real es: tocás <b>📋 Copiar</b>, abrís el grupo, pegás (Ctrl+V / mantené presionado y pegar) y publicás. Con el botón <b>📘 Compartir</b> se abre la ventana de Facebook con el link de tu tienda y, cuando Facebook lo permite, el texto ya cargado — si no lo carga automáticamente, ya lo tenés copiado para pegar.<br><br>
+      <b>Meta Ads (anuncios pagos):</b> Los anuncios reales se crean y pagan en <a href="https://www.facebook.com/adsmanager" target="_blank" style="color:var(--accent2)">Meta Ads Manager</a> (necesitás tu cuenta publicitaria y método de pago propio; eso no se puede automatizar desde una página web). Acá te genero, por cada producto, el <b>Texto principal</b>, <b>Título</b> y <b>Descripción</b> ya listos para pegar cuando crees el anuncio ahí. Guía rápida: Ads Manager → Crear → Objetivo "Mensajes" o "Tráfico" → Página de destino: tu link de WhatsApp o esta tienda → pegás el copy de la pestaña "Meta Ads" → segmentás por ubicación (Buenos Aires / Argentina) → publicás.<br><br>
+      <b>Mensajes de Facebook en la misma página:</b> ya está integrado el <b>chat de Messenger</b> (ícono flotante). Los mensajes que te escriban ahí te llegan a la bandeja de tu Página de Facebook / Meta Business Suite, y respondés desde ahí — así no perdés ningún contacto, todo lo demás (ver producto, agregar al carrito, pagar) sigue pasando adentro de la tienda.<br><br>
+      <b>Antes de que esto funcione al 100% necesitás configurar 2 cosas</b> (una sola vez, te dejé los pasos como comentarios en el código): tu <b>Pixel ID</b> de Meta (para medir conversiones de los anuncios) y tu <b>Page ID</b> de Facebook (para que lleguen los mensajes de Messenger).
+    </details>
+
+    <div class="mk-toolbar">
+      <input type="text" id="mk-search" placeholder="Buscar producto para armar su anuncio..." oninput="mkRenderList(true)">
+      <button onclick="mkCopyAllVisible()">📋 Copiar todos los visibles</button>
+      <button onclick="window.open('https://www.facebook.com/groups/feed/','_blank')">👥 Abrir mis grupos</button>
+      <button onclick="window.open('https://www.facebook.com/adsmanager','_blank')">🎯 Abrir Meta Ads Manager</button>
+    </div>
+
+    <div id="mk-selection-bar">
+      <span>📦 Combo múltiple:</span> <strong id="mk-sel-count">0/12</strong> seleccionados
+      <button class="btn-copy" style="padding:6px 10px;font-size:12px" onclick="mkBuildCombo()">Armar combo con seleccionados</button>
+      <button class="btn-copy" style="padding:6px 10px;font-size:12px" onclick="mkClearSelection()">Vaciar selección</button>
+      <span style="font-size:11.5px;color:var(--muted)">(máx. 12 productos por publicación — así el post no queda saturado)</span>
+    </div>
+    <div id="mk-combo-result">
+      <textarea class="mk-text" id="mk-combo-text" style="min-height:170px"></textarea>
+      <div class="mk-item-actions">
+        <button class="mk-copy" onclick="comboCopy()">📋 Copiar combo</button>
+        <button class="mk-fb" style="background:#1877F2" onclick="comboShare('facebook')">📘 Facebook</button>
+        <button class="mk-fb" style="background:#25D366" onclick="comboShare('whatsapp')">🟢 WhatsApp</button>
+        <button class="mk-fb" style="background:#229ED9" onclick="comboShare('telegram')">✈️ Telegram</button>
+        <button class="mk-fb" style="background:#000" onclick="comboShare('x')">✖️ X</button>
+      </div>
+    </div>
+
+    <div id="mk-list"></div>
+    <button id="mk-loadmore" onclick="mkLoadMore()">Cargar más productos ⬇</button>
+  </div>
+</div>
+
+<!-- ===== Popover de compartir multi-plataforma ===== -->
+<div id="share-menu"></div>
+
+<!-- ===== PROGRAMA DE VENDEDORES (afiliados/revendedores) ===== -->
+<div id="rs-overlay" onclick="closeResellerModal()"></div>
+<div id="rs-modal">
+  <div class="mk-header">
+    <h2>🤝 Programa de Vendedores</h2>
+    <button onclick="closeResellerModal()">✕</button>
+  </div>
+  <div class="rs-body">
+    <div class="mk-instructions" style="margin-bottom:6px">
+      Cualquier persona puede vender los productos de la tienda usando su propio link. El comprador ve el precio con el margen extra que el vendedor elija, y el pedido por WhatsApp llega marcado con su código para que Sabino sepa cuánto es de él y cuánto le corresponde al vendedor. La cobranza y el reparto se coordinan directo entre el vendedor y Sabino por WhatsApp (esta herramienta arma el link y hace las cuentas, no procesa pagos).
+    </div>
+    <label>Nombre o alias del vendedor</label>
+    <input type="text" id="rs-nombre" placeholder="Ej: Martín, Kiosco Norte, etc.">
+    <label>Margen extra que querés ganar (%)</label>
+    <input type="number" id="rs-margen" placeholder="Ej: 15" min="1" max="100" value="15">
+    <button class="btn-add" onclick="resellerGenerar()">Generar mi link de vendedor</button>
+    <div id="rs-result">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">Tu link personal (compartilo donde quieras):</div>
+      <input id="rs-link" readonly onclick="this.select()">
+      <div class="mk-item-actions">
+        <button class="mk-copy" onclick="resellerCopyLink()">📋 Copiar link</button>
+        <button class="mk-fb" style="background:#1877F2" onclick="resellerShareLink('facebook')">📘</button>
+        <button class="mk-fb" style="background:#25D366" onclick="resellerShareLink('whatsapp')">🟢</button>
+        <button class="mk-fb" style="background:#229ED9" onclick="resellerShareLink('telegram')">✈️</button>
+        <button class="mk-fb" style="background:#000" onclick="resellerShareLink('x')">✖️</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="productos.js"></script>
 <script>
 const WA_NUM = '542664838880';
@@ -651,6 +937,8 @@ function render() {
           ${inCart ? '✓ En carrito' : '+ Agregar'}
         </button>
         <button class="btn-wapp" onclick="wappProducto('${p.id}')" title="Pedir por WhatsApp">📱</button>
+        <button class="btn-fb" onclick="openShareMenu(event,'${p.id}')" title="Compartir (Facebook, WhatsApp, Telegram, X)">🔗</button>
+        <button class="btn-copy" onclick="copyProductoAd('${p.id}')" title="Copiar anuncio para pegar en Facebook">📋</button>
       </div>
     </div>`;
   }).join('');
@@ -673,9 +961,14 @@ function openModal(id) {
     <div class="modal-actions">
       <button class="btn-add" onclick="addCart('${p.id}');closeModal2()">+ Agregar al carrito</button>
       <button class="btn-wapp" onclick="wappProducto('${p.id}')">📱</button>
+      <button class="btn-fb" onclick="openShareMenu(event,'${p.id}')" title="Compartir (Facebook, WhatsApp, Telegram, X)">🔗</button>
+      <button class="btn-copy" onclick="copyProductoAd('${p.id}')" title="Copiar anuncio">📋</button>
     </div>
   `;
   document.getElementById('modal').classList.add('open');
+  if (typeof fbq !== 'undefined') {
+    fbq('track', 'ViewContent', { content_ids: [p.id], content_name: p.name, value: pr, currency: 'ARS' });
+  }
 }
 function closeModal(e) {
   if (e.target.id === 'modal') document.getElementById('modal').classList.remove('open');
@@ -691,6 +984,9 @@ function addCart(id) {
   if (existing) { existing.qty++; }
   else { cart.push({ id: p.id, name: p.name, image: p.image, price: precio(p), qty: 1, modo }); }
   saveCart(); updateCartUI(); showToast('✓ Agregado'); render();
+  if (typeof fbq !== 'undefined') {
+    fbq('track', 'AddToCart', { content_ids: [p.id], content_name: p.name, value: precio(p), currency: 'ARS' });
+  }
 }
 
 function removeFromCart(id) {
@@ -755,7 +1051,11 @@ function pedirPorWhatsApp() {
     msg += `• ${c.name}\n  Cod: ${c.id} · Cant: ${c.qty} · $${(c.price*c.qty).toLocaleString('es-AR')}\n`;
   });
   msg += `\n💰 *TOTAL: $${total.toLocaleString('es-AR')}*\n\n¿Cómo coordinamos el pago? (Transferencia / Cripto)`;
+  if (typeof resellerWaSuffix === 'function') msg += resellerWaSuffix(total);
   window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+  if (typeof fbq !== 'undefined') {
+    fbq('track', 'InitiateCheckout', { value: total, currency: 'ARS', num_items: cart.length });
+  }
 }
 
 function wappProducto(id) {
@@ -763,8 +1063,12 @@ function wappProducto(id) {
   if (!p) return;
   const modo = getModo();
   const pr = precio(p);
-  const msg = `Hola Sabino! 👋 Consulto por:\n\n*${p.name}*\nCód: ${p.id}\nPrecio ${MODO_LABEL[modo]}: $${pr.toLocaleString('es-AR')}\n\n¿Tenés disponible?`;
+  const msg0 = `Hola Sabino! 👋 Consulto por:\n\n*${p.name}*\nCód: ${p.id}\nPrecio ${MODO_LABEL[modo]}: $${pr.toLocaleString('es-AR')}\n\n¿Tenés disponible?`;
+  const msg = msg0 + (typeof resellerWaSuffix === 'function' ? resellerWaSuffix(pr) : '');
   window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+  if (typeof fbq !== 'undefined') {
+    fbq('track', 'InitiateCheckout', { content_ids: [p.id], content_name: p.name, value: pr, currency: 'ARS' });
+  }
 }
 
 let toastTimer;
@@ -1128,6 +1432,8 @@ setTimeout(() => {
 updateCartUI();
 render();
 </script>
+
+<script src="marketing.js"></script>
 
 </body>
 </html>
