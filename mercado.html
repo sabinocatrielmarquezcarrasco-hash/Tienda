@@ -8,9 +8,11 @@
   :root{
     --bg:#0b0d12; --panel:#141822; --panel2:#1b2130; --accent:#7c5cff;
     --accent2:#22d3a8; --text:#e8eaf0; --muted:#8b93a7; --danger:#ff5c7a;
+    --lum:1;
   }
   *{box-sizing:border-box;}
-  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;padding:16px;}
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;padding:16px;
+    filter:brightness(var(--lum));transition:filter .2s;}
   h1{font-size:20px;margin:0 0 4px;}
   h3{margin-top:0;}
   .sub{color:var(--muted);font-size:13px;margin-bottom:8px;}
@@ -22,6 +24,7 @@
     font-weight:600;cursor:pointer;font-size:14px;}
   button.secondary{background:var(--panel2);border:1px solid #2b3244;}
   button.green{background:var(--accent2);color:#04241c;}
+  button.wa{background:#25D366;color:#04241c;}
   button:disabled{opacity:.5;cursor:not-allowed;}
   .hidden{display:none !important;}
   .row{display:flex;gap:8px;flex-wrap:wrap;}
@@ -43,13 +46,59 @@
   .stat b{display:block;font-size:22px;color:var(--accent2);}
   .stat span{font-size:11px;color:var(--muted);}
   .payopt{background:#0e1420;border-radius:8px;padding:8px;margin-top:6px;font-size:13px;}
+  .storebar{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;border-radius:12px;
+    padding:14px;margin-bottom:16px;}
+  .storebar b{font-size:18px;display:block;}
+  .storebar .muted2{color:rgba(255,255,255,.85);font-size:12px;}
+  .theme-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:8px 0;}
+  .theme-dot{width:34px;height:34px;border-radius:50%;cursor:pointer;border:2px solid transparent;
+    box-shadow:0 0 0 1px #2b3244 inset;flex:none;}
+  .theme-dot.active{border-color:#fff;transform:scale(1.1);}
+  .theme-label{font-size:11px;color:var(--muted);text-align:center;width:40px;}
+  .theme-col{display:flex;flex-direction:column;align-items:center;gap:4px;}
+  details.guide{background:var(--panel2);border-radius:12px;padding:10px 14px;margin-bottom:10px;}
+  details.guide summary{cursor:pointer;font-weight:600;}
+  details.guide ol{margin:10px 0 4px 18px;padding:0;font-size:13px;line-height:1.6;}
+  .toggle-link{color:var(--accent2);font-size:13px;cursor:pointer;text-decoration:underline;margin-top:6px;display:inline-block;}
+  .brightness-wrap{margin-top:8px;}
+  .brightness-wrap input[type=range]{width:100%;}
 </style>
 </head>
 <body>
 
-<h1>🛒 Sabino Tech — Mercado</h1>
-<div class="sub">Comprá, vendé y generá tu propio link de reventa. Verificación real por SMS.</div>
+<!-- ===== BARRA DE TIENDA PERSONALIZADA (solo aparece con ?tienda=CODIGO) ===== -->
+<div class="storebar hidden" id="storeBar">
+  <b id="storeBarName">Tienda</b>
+  <div class="muted2" id="storeBarSub">Pedidos coordinados directo con este vendedor.</div>
+  <button class="wa hidden" id="storeWaBtn" style="margin-top:10px;">💬 Pedir por WhatsApp</button>
+</div>
+
+<h1 id="mainTitle">🛒 Sabino Tech — Mercado</h1>
+<div class="sub" id="mainSub">Comprá, vendé y generá tu propio link de reventa. Verificación real por SMS.</div>
 <div class="locbar" id="locBar">📍 Detectando tu ubicación...</div>
+
+<!-- ===== GUÍAS PASO A PASO ===== -->
+<details class="guide">
+  <summary>🧭 Guía para compradores — ¿cómo pido algo acá?</summary>
+  <ol>
+    <li>Ingresá tu número de celular y verificá con el código SMS.</li>
+    <li>Buscá el producto en el mercado (o entrá directo al link de la tienda de un vendedor).</li>
+    <li>Tocá "Comprar" y fijate los medios de pago que dejó ese vendedor (alias, Mercado Pago o cripto).</li>
+    <li>Pagále directo a ese vendedor por el medio que prefieras.</li>
+    <li>Tocá "Ya pagué / confirmar pedido" y coordiná la entrega por el chat o por WhatsApp.</li>
+  </ol>
+</details>
+<details class="guide">
+  <summary>🧭 Guía para vendedores — ¿cómo vendo con mi propio link?</summary>
+  <ol>
+    <li>Verificá tu celular y tocá "Quiero ser vendedor".</li>
+    <li>Cargá tu WhatsApp propio y tus medios de cobro (alias, Mercado Pago o wallet cripto).</li>
+    <li>Elegí el color de tu tienda con los 5 puntos de abajo y ajustá el brillo a gusto.</li>
+    <li>Publicá tus productos o compartí tu link de tienda para que la gente vea los productos del mercado con tu marca.</li>
+    <li>Cuando alguien te compre, coordinás el pago y la entrega directo con él (por chat o WhatsApp).</li>
+    <li>Para reponer stock, comprame a mí (Sabino) y así siempre tenés qué vender. Si querés, creá un usuario y contraseña para pasárselo a alguien de confianza y que atienda tu tienda por vos.</li>
+  </ol>
+</details>
 
 <!-- ===== PANEL ADMIN (solo vos) ===== -->
 <div class="card hidden" id="adminCard">
@@ -64,6 +113,20 @@
     <input type="tel" id="phoneInput" placeholder="+549...">
     <div id="recaptcha-container"></div>
     <button id="sendCodeBtn">Enviar código por SMS</button>
+    <div class="toggle-link" id="showDelegateLoginBtn">¿Sos vendedor y tenés usuario y contraseña? Entrar así →</div>
+  </div>
+
+  <!-- ===== Acceso delegado (usuario/contraseña) para gente de confianza del vendedor ===== -->
+  <div id="step-delegate" class="hidden">
+    <label class="muted">Usuario de la tienda</label>
+    <input type="text" id="delegateUser" placeholder="usuario">
+    <label class="muted">Contraseña</label>
+    <input type="password" id="delegatePass" placeholder="contraseña">
+    <div class="row">
+      <button id="delegateLoginBtn">Entrar a la tienda</button>
+      <button class="secondary" id="backFromDelegateBtn">Volver</button>
+    </div>
+    <div class="muted" style="margin-top:6px;">Esto te deja publicar y chatear como esa tienda, sin ver los datos personales del dueño.</div>
   </div>
 
   <div id="step-code" class="hidden">
@@ -91,16 +154,36 @@
 
     <div id="sellerInfoBox" class="hidden" style="margin-top:12px;">
       <span class="pill">Vendedor activo</span>
-      <div class="muted">Tu link de reventa personal (se generó solo):</div>
+      <div class="muted">Tu link de tienda personal (se generó solo):</div>
       <div class="link-box" id="referralLinkBox"></div>
       <button class="secondary" id="copyRefBtn" style="margin-top:8px;">Copiar mi link</button>
 
       <div style="margin-top:14px;">
+        <label class="muted">Nombre de tu tienda (se muestra a tus clientes)</label>
+        <input type="text" id="storeName" placeholder="Ej: Tienda de Martín">
+        <label class="muted">Tu WhatsApp propio para recibir pedidos (con código de país)</label>
+        <input type="text" id="sellerWhatsapp" placeholder="+549...">
         <label class="muted">Tus medios de cobro (para que el comprador te pague directo)</label>
         <input type="text" id="payAlias" placeholder="Alias / CBU bancario (opcional)">
         <input type="text" id="payMP" placeholder="Link de pago de Mercado Pago (opcional)">
         <input type="text" id="payCrypto" placeholder="Wallet cripto USDT/BTC/USDC (opcional)">
-        <button class="secondary" id="savePayBtn">Guardar medios de cobro</button>
+        <button class="secondary" id="savePayBtn">Guardar datos de mi tienda</button>
+      </div>
+
+      <div id="ownerOnlyBox" style="margin-top:14px;">
+        <label class="muted">🎨 Color de tu tienda (elegí el que más venda)</label>
+        <div class="theme-row" id="themeDots"></div>
+        <div class="brightness-wrap">
+          <label class="muted">Brillo / luminosidad de la página</label>
+          <input type="range" id="brightnessRange" min="0" max="100" value="50">
+        </div>
+
+        <div style="margin-top:14px;">
+          <label class="muted">Usuario y contraseña de tu tienda (para dárselo a alguien de confianza que la atienda)</label>
+          <input type="text" id="sellerUsername" placeholder="usuario para tu tienda">
+          <input type="password" id="sellerPassword" placeholder="contraseña nueva (dejar vacío para no cambiarla)">
+          <button class="secondary" id="saveCredsBtn">Guardar usuario y contraseña</button>
+        </div>
       </div>
     </div>
   </div>
@@ -128,8 +211,8 @@
 
 <!-- ===== BLOQUE 3: FEED DEL MERCADO ===== -->
 <div class="card">
-  <h3>Productos del mercado</h3>
-  <div class="muted" style="margin-bottom:10px;">Tuyos + de todos los vendedores registrados.</div>
+  <h3 id="feedTitle">Productos del mercado</h3>
+  <div class="muted" style="margin-bottom:10px;" id="feedSub">Tuyos + de todos los vendedores registrados.</div>
   <div id="feed"></div>
 </div>
 
@@ -138,6 +221,7 @@
   <h3>Confirmar pedido</h3>
   <div id="checkoutProduct"></div>
   <div id="checkoutPayOptions"></div>
+  <button class="wa hidden" id="checkoutWaBtn" style="margin-top:10px;">💬 Coordinar por WhatsApp</button>
   <button id="confirmOrderBtn" style="margin-top:10px;">Ya pagué / confirmar pedido</button>
 </div>
 
@@ -154,11 +238,11 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
 import {
-  getAuth, RecaptchaVerifier, signInWithPhoneNumber, signOut, onAuthStateChanged
+  getAuth, RecaptchaVerifier, signInWithPhoneNumber, signInAnonymously, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
 import {
   getFirestore, doc, setDoc, getDoc, updateDoc, collection, addDoc,
-  query, orderBy, where, onSnapshot, serverTimestamp, increment
+  query, orderBy, where, limit, getDocs, onSnapshot, serverTimestamp, increment, arrayUnion
 } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
 
 // Config real de tu proyecto Firebase (compartido entre Sabino Tech y TuKompa)
@@ -179,6 +263,15 @@ const ADMIN_PHONES = ["+5492664838880"];
 // Los productos, pedidos y stats quedan filtrados por esta etiqueta para no mezclarse.
 const PLATFORM = "sabinotech"; // en TuKompa este valor debe ser "tukompa"
 
+// ---------- 5 colores pensados para vender (podés retocar los hex) ----------
+const THEMES = [
+  { id:"confianza", name:"Confianza",  accent:"#2f6fed", accent2:"#22d3a8" },
+  { id:"urgencia",  name:"Urgencia",   accent:"#ff4d4d", accent2:"#ffb020" },
+  { id:"natural",   name:"Natural",    accent:"#16a34a", accent2:"#84cc16" },
+  { id:"lujo",      name:"Lujo",       accent:"#7c5cff", accent2:"#d4af37" },
+  { id:"energia",   name:"Energía",    accent:"#f97316", accent2:"#facc15" }
+];
+
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -190,11 +283,73 @@ let chatUnsub = null;
 let checkoutData = null;
 let userCity = "Ubicación no detectada";
 
+// Sesión delegada: si alguien entró con usuario/contraseña de una tienda,
+// acá guardamos el UID real del dueño para que los productos/chat queden a su nombre.
+let delegateOwnerUid = null;
+
 window.recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "normal" });
 
 const $ = (id) => document.getElementById(id);
 function show(id){ $(id).classList.remove("hidden"); }
 function hide(id){ $(id).classList.add("hidden"); }
+
+// ---------- Hash simple de contraseña (SHA-256) ----------
+async function sha256(str){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+// ---------- Temas de color ----------
+function applyTheme(themeId, brightness){
+  const theme = THEMES.find(t => t.id === themeId) || THEMES[0];
+  const root = document.documentElement;
+  root.style.setProperty("--accent", theme.accent);
+  root.style.setProperty("--accent2", theme.accent2);
+  const b = (brightness === undefined || brightness === null) ? 50 : Number(brightness);
+  // 0 = más oscuro (0.85), 100 = más claro (1.15). 50 = normal.
+  root.style.setProperty("--lum", (0.85 + (b/100)*0.30).toFixed(3));
+  document.querySelectorAll(".theme-dot").forEach(d => {
+    d.classList.toggle("active", d.dataset.id === theme.id);
+  });
+  $("brightnessRange").value = b;
+}
+
+function renderThemeDots(currentThemeId){
+  const box = $("themeDots");
+  box.innerHTML = "";
+  THEMES.forEach(t => {
+    const col = document.createElement("div");
+    col.className = "theme-col";
+    col.innerHTML = `
+      <div class="theme-dot ${t.id===currentThemeId?"active":""}" data-id="${t.id}"
+        style="background:linear-gradient(135deg, ${t.accent}, ${t.accent2})"></div>
+      <span class="theme-label">${t.name}</span>
+    `;
+    box.appendChild(col);
+  });
+  box.querySelectorAll(".theme-dot").forEach(dot => {
+    dot.onclick = async () => {
+      const brightness = $("brightnessRange").value;
+      applyTheme(dot.dataset.id, brightness);
+      if(currentUser && currentUserDoc && !delegateOwnerUid){
+        await updateDoc(doc(db,"marketUsers",currentUser.uid), { themeId: dot.dataset.id, themeBrightness: Number(brightness) });
+        currentUserDoc.themeId = dot.dataset.id;
+      }
+    };
+  });
+}
+
+$("brightnessRange").oninput = async () => {
+  const activeDot = document.querySelector(".theme-dot.active");
+  const themeId = activeDot ? activeDot.dataset.id : THEMES[0].id;
+  applyTheme(themeId, $("brightnessRange").value);
+};
+$("brightnessRange").onchange = async () => {
+  if(currentUser && currentUserDoc && !delegateOwnerUid){
+    await updateDoc(doc(db,"marketUsers",currentUser.uid), { themeBrightness: Number($("brightnessRange").value) });
+    currentUserDoc.themeBrightness = Number($("brightnessRange").value);
+  }
+};
 
 // ---------- Ubicación automática real (GPS del navegador, con fallback por IP) ----------
 async function reverseGeocode(lat, lon){
@@ -282,6 +437,38 @@ $("sendCodeBtn").onclick = async () => {
 };
 $("backBtn").onclick = () => { hide("step-code"); show("step-phone"); };
 
+// ---------- Acceso delegado (usuario / contraseña de una tienda) ----------
+$("showDelegateLoginBtn").onclick = () => { hide("step-phone"); show("step-delegate"); };
+$("backFromDelegateBtn").onclick = () => { hide("step-delegate"); show("step-phone"); };
+
+$("delegateLoginBtn").onclick = async () => {
+  const username = $("delegateUser").value.trim().toLowerCase();
+  const password = $("delegatePass").value;
+  if(!username || !password){ alert("Completá usuario y contraseña."); return; }
+  $("delegateLoginBtn").disabled = true; $("delegateLoginBtn").textContent = "Entrando...";
+  try{
+    const passHash = await sha256(password);
+    const q = query(collection(db,"marketUsers"), where("sellerUsername","==",username), limit(1));
+    const snap = await getDocs(q);
+    if(snap.empty){ alert("Usuario o contraseña incorrectos."); return; }
+    const sellerDoc = snap.docs[0];
+    const sellerData = sellerDoc.data();
+    if(sellerData.sellerPasswordHash !== passHash){ alert("Usuario o contraseña incorrectos."); return; }
+
+    // Entramos con una sesión anónima propia, marcada como "delegada" de la tienda real.
+    const cred = await signInAnonymously(auth);
+    currentUser = cred.user;
+    delegateOwnerUid = sellerDoc.id;
+    await updateDoc(doc(db,"marketUsers", sellerDoc.id), { delegateUids: arrayUnion(currentUser.uid) });
+    currentUserDoc = sellerData;
+    renderLoggedIn(true);
+  }catch(err){
+    alert("No se pudo entrar: " + err.message);
+  }finally{
+    $("delegateLoginBtn").disabled = false; $("delegateLoginBtn").textContent = "Entrar a la tienda";
+  }
+};
+
 // ---------- PASO 2: verificar código ----------
 $("verifyCodeBtn").onclick = async () => {
   const code = $("codeInput").value.trim();
@@ -289,6 +476,7 @@ $("verifyCodeBtn").onclick = async () => {
   try{
     const result = await confirmationResult.confirm(code);
     currentUser = result.user;
+    delegateOwnerUid = null;
     await ensureUserDoc(currentUser);
   }catch(err){
     alert("Código incorrecto: " + err.message);
@@ -303,16 +491,23 @@ async function ensureUserDoc(user){
     const referralCode = user.uid.slice(0,8);
     await setDoc(ref, {
       phone: user.phoneNumber, isSeller:false, referralCode,
-      payAlias:"", payMP:"", payCrypto:"", createdAt: serverTimestamp()
+      payAlias:"", payMP:"", payCrypto:"", whatsapp:"", storeName:"",
+      themeId: THEMES[0].id, themeBrightness: 50,
+      sellerUsername:"", sellerPasswordHash:"", delegateUids:[],
+      createdAt: serverTimestamp()
     });
-    currentUserDoc = { phone:user.phoneNumber, isSeller:false, referralCode, payAlias:"", payMP:"", payCrypto:"" };
+    currentUserDoc = {
+      phone:user.phoneNumber, isSeller:false, referralCode,
+      payAlias:"", payMP:"", payCrypto:"", whatsapp:"", storeName:"",
+      themeId: THEMES[0].id, themeBrightness: 50
+    };
     const statsRef = doc(db,"stats",PLATFORM);
     const s = await getDoc(statsRef);
     if(s.exists()) await updateDoc(statsRef, { totalUsers: increment(1) });
   } else {
     currentUserDoc = snap.data();
   }
-  renderLoggedIn();
+  renderLoggedIn(false);
 
   if(ADMIN_PHONES.includes(user.phoneNumber)){
     show("adminCard");
@@ -320,17 +515,33 @@ async function ensureUserDoc(user){
   }
 }
 
-function renderLoggedIn(){
-  hide("step-phone"); hide("step-code"); show("step-loggedin");
-  $("userPhoneLabel").textContent = currentUser.phoneNumber;
+function renderLoggedIn(isDelegate){
+  hide("step-phone"); hide("step-code"); hide("step-delegate"); show("step-loggedin");
+  $("userPhoneLabel").textContent = isDelegate
+    ? `Atendiendo: ${currentUserDoc.storeName || currentUserDoc.phone || "tienda"}`
+    : currentUser.phoneNumber;
+  $("logoutBtn").classList.remove("hidden");
+
   if(currentUserDoc.isSeller){
-    $("userStatusLabel").textContent = "Vendedor";
+    $("userStatusLabel").textContent = isDelegate ? "Vendedor (acceso delegado)" : "Vendedor";
     hide("becomeSellerBox"); show("sellerInfoBox"); show("publishCard");
-    const link = `${location.origin}${location.pathname.replace("mercado.html","")}?ref=${currentUserDoc.referralCode}`;
+    const code = currentUserDoc.referralCode;
+    const link = `${location.origin}${location.pathname.replace("mercado.html","")}mercado.html?tienda=${code}`;
     $("referralLinkBox").textContent = link;
+    $("storeName").value = currentUserDoc.storeName || "";
+    $("sellerWhatsapp").value = currentUserDoc.whatsapp || "";
     $("payAlias").value = currentUserDoc.payAlias || "";
     $("payMP").value = currentUserDoc.payMP || "";
     $("payCrypto").value = currentUserDoc.payCrypto || "";
+
+    // Las herramientas de dueño (colores, usuario/contraseña) solo las ve el dueño real, no un delegado.
+    if(isDelegate){ hide("ownerOnlyBox"); }
+    else{
+      show("ownerOnlyBox");
+      renderThemeDots(currentUserDoc.themeId || THEMES[0].id);
+      applyTheme(currentUserDoc.themeId || THEMES[0].id, currentUserDoc.themeBrightness);
+      $("sellerUsername").value = currentUserDoc.sellerUsername || "";
+    }
   } else {
     $("userStatusLabel").textContent = "Comprador";
     show("becomeSellerBox"); hide("sellerInfoBox"); hide("publishCard");
@@ -350,27 +561,45 @@ $("becomeSellerBtn").onclick = async () => {
   currentUserDoc.isSeller = true;
   const statsRef = doc(db,"stats",PLATFORM);
   await updateDoc(statsRef, { totalSellers: increment(1) });
-  renderLoggedIn();
+  renderLoggedIn(false);
 };
 
-// ---------- Guardar medios de cobro ----------
+// ---------- Guardar datos de la tienda (nombre, WhatsApp, medios de cobro) ----------
 $("savePayBtn").onclick = async () => {
+  const storeName = $("storeName").value.trim();
+  const whatsapp = $("sellerWhatsapp").value.trim();
   const payAlias = $("payAlias").value.trim();
   const payMP = $("payMP").value.trim();
   const payCrypto = $("payCrypto").value.trim();
-  await updateDoc(doc(db,"marketUsers",currentUser.uid), { payAlias, payMP, payCrypto });
-  currentUserDoc.payAlias = payAlias; currentUserDoc.payMP = payMP; currentUserDoc.payCrypto = payCrypto;
+  const ownerUid = delegateOwnerUid || currentUser.uid;
+  await updateDoc(doc(db,"marketUsers",ownerUid), { storeName, whatsapp, payAlias, payMP, payCrypto });
+  Object.assign(currentUserDoc, { storeName, whatsapp, payAlias, payMP, payCrypto });
   $("savePayBtn").textContent = "¡Guardado!";
-  setTimeout(()=> $("savePayBtn").textContent = "Guardar medios de cobro", 1500);
+  setTimeout(()=> $("savePayBtn").textContent = "Guardar datos de mi tienda", 1500);
+};
+
+// ---------- Guardar usuario/contraseña de la tienda (solo dueño real) ----------
+$("saveCredsBtn").onclick = async () => {
+  const username = $("sellerUsername").value.trim().toLowerCase();
+  const password = $("sellerPassword").value;
+  if(!username){ alert("Poné un usuario para tu tienda."); return; }
+  const data = { sellerUsername: username };
+  if(password){ data.sellerPasswordHash = await sha256(password); }
+  await updateDoc(doc(db,"marketUsers",currentUser.uid), data);
+  Object.assign(currentUserDoc, data);
+  $("sellerPassword").value = "";
+  $("saveCredsBtn").textContent = "¡Guardado!";
+  setTimeout(()=> $("saveCredsBtn").textContent = "Guardar usuario y contraseña", 1500);
 };
 
 // ---------- Logout ----------
 $("logoutBtn").onclick = async () => {
   await signOut(auth);
-  currentUser = null; currentUserDoc = null;
+  currentUser = null; currentUserDoc = null; delegateOwnerUid = null;
   hide("step-loggedin"); hide("publishCard"); hide("chatCard"); hide("checkoutCard"); hide("adminCard");
-  show("step-phone");
+  show("step-phone"); hide("step-delegate");
   $("phoneInput").value = ""; $("codeInput").value = "";
+  $("delegateUser").value = ""; $("delegatePass").value = "";
 };
 
 // ---------- Publicar producto (con ubicación real y etiqueta de plataforma) ----------
@@ -382,28 +611,70 @@ $("publishBtn").onclick = async () => {
   const desc = $("pDesc").value.trim();
   if(!title || !price){ alert("Completá al menos título y precio."); return; }
 
+  const ownerUid = delegateOwnerUid || currentUser.uid;
+  const ownerPhone = delegateOwnerUid ? (currentUserDoc.whatsapp || currentUserDoc.phone || "") : currentUser.phoneNumber;
+
   await addDoc(collection(db, "products"), {
     title, price, img, category, desc,
     city: userCity,
     platform: PLATFORM,
-    ownerId: currentUser.uid, ownerPhone: currentUser.phoneNumber,
+    ownerId: ownerUid, ownerPhone,
     referralCode: currentUserDoc.referralCode, createdAt: serverTimestamp()
   });
   $("pTitle").value=""; $("pPrice").value=""; $("pImg").value=""; $("pDesc").value="";
   alert("Producto publicado desde " + userCity + ".");
 };
 
-// ---------- Feed en vivo (filtrado SOLO por esta plataforma) ----------
+// ---------- Modo tienda personalizada (?tienda=CODIGO) ----------
+const params = new URLSearchParams(location.search);
+const storeCode = params.get("tienda");
+const refCode = params.get("ref");
+if(refCode) sessionStorage.setItem("refCode", refCode);
+
+let storeFilterCode = null;
+let storeSellerInfo = null;
+
+async function setupStoreMode(){
+  if(!storeCode) return;
+  const q = query(collection(db,"marketUsers"), where("referralCode","==",storeCode), limit(1));
+  const snap = await getDocs(q);
+  if(snap.empty) return;
+  storeFilterCode = storeCode;
+  storeSellerInfo = snap.docs[0].data();
+
+  applyTheme(storeSellerInfo.themeId || THEMES[0].id, storeSellerInfo.themeBrightness);
+  const name = storeSellerInfo.storeName || `Tienda de ${storeSellerInfo.phone || "un vendedor"}`;
+  $("mainTitle").textContent = "🛒 " + name;
+  $("mainSub").textContent = "Productos de esta tienda. Verificación real por SMS para comprar.";
+  $("feedTitle").textContent = "Productos de " + name;
+  $("feedSub").textContent = "Estos son los productos publicados por este vendedor.";
+
+  show("storeBar");
+  $("storeBarName").textContent = name;
+  $("storeBarSub").textContent = "Pedidos y coordinación directo con este vendedor.";
+  const wa = storeSellerInfo.whatsapp;
+  if(wa){
+    const waDigits = wa.replace(/[^0-9]/g,"");
+    show("storeWaBtn");
+    $("storeWaBtn").onclick = () => {
+      window.open(`https://wa.me/${waDigits}?text=${encodeURIComponent("Hola! Vi tu tienda "+name+" y quiero consultar por un producto.")}`, "_blank");
+    };
+  }
+}
+setupStoreMode();
+
+// ---------- Feed en vivo (filtrado por plataforma y, si corresponde, por tienda) ----------
 const feedQuery = query(collection(db, "products"), where("platform","==",PLATFORM), orderBy("createdAt","desc"));
 onSnapshot(feedQuery, (snap) => {
   const feed = $("feed");
   feed.innerHTML = "";
   snap.forEach(docSnap => {
     const p = docSnap.data();
+    if(storeFilterCode && p.referralCode !== storeFilterCode) return; // en modo tienda solo se ven sus productos
     const id = docSnap.id;
     const div = document.createElement("div");
     div.className = "product";
-    const shareLink = `${location.origin}${location.pathname.replace("mercado.html","")}?ref=${p.referralCode}&pid=${id}`;
+    const shareLink = `${location.origin}${location.pathname.replace("mercado.html","")}mercado.html?tienda=${p.referralCode}`;
     div.innerHTML = `
       ${p.img ? `<img src="${p.img}" onerror="this.style.display='none'">` : ""}
       <div class="price">$${Number(p.price).toLocaleString("es-AR")}</div>
@@ -453,8 +724,19 @@ async function openCheckout(productId, snap){
   if(seller.payAlias) opts += `<div class="payopt">💵 Transferencia — Alias: <b>${seller.payAlias}</b></div>`;
   if(seller.payMP) opts += `<div class="payopt">🔵 Mercado Pago — <a href="${seller.payMP}" target="_blank" style="color:var(--accent2)">${seller.payMP}</a></div>`;
   if(seller.payCrypto) opts += `<div class="payopt">₿ Cripto (USDT/BTC/USDC) — Wallet: <b>${seller.payCrypto}</b></div>`;
-  if(!opts) opts = `<div class="payopt muted">Este vendedor todavía no cargó medios de cobro. Coordiná por el chat.</div>`;
+  if(!opts) opts = `<div class="payopt muted">Este vendedor todavía no cargó medios de cobro. Coordiná por el chat o WhatsApp.</div>`;
   $("checkoutPayOptions").innerHTML = opts;
+
+  if(seller.whatsapp){
+    const waDigits = seller.whatsapp.replace(/[^0-9]/g,"");
+    show("checkoutWaBtn");
+    $("checkoutWaBtn").onclick = () => {
+      const msg = `Hola! Quiero pedir: ${product.title} - $${Number(product.price).toLocaleString("es-AR")}`;
+      window.open(`https://wa.me/${waDigits}?text=${encodeURIComponent(msg)}`, "_blank");
+    };
+  } else {
+    hide("checkoutWaBtn");
+  }
 
   $("checkoutCard").scrollIntoView({behavior:"smooth"});
 }
@@ -471,7 +753,7 @@ $("confirmOrderBtn").onclick = async () => {
   });
   const statsRef = doc(db, "stats", PLATFORM);
   await updateDoc(statsRef, { totalOrders: increment(1) });
-  alert("Pedido confirmado. Avisale al vendedor por el chat que ya pagaste.");
+  alert("Pedido confirmado. Avisale al vendedor por el chat o WhatsApp que ya pagaste.");
   openChat(productId, product.ownerId, product.ownerPhone);
   hide("checkoutCard");
 };
@@ -507,14 +789,9 @@ function openChat(productId, ownerId, ownerPhone){
   };
 }
 
-// ---------- Link de referido en la URL ----------
-const params = new URLSearchParams(location.search);
-const refCode = params.get("ref");
-if(refCode) sessionStorage.setItem("refCode", refCode);
-
 // ---------- Estado de sesión persistente ----------
 onAuthStateChanged(auth, async (user) => {
-  if(user){ currentUser = user; await ensureUserDoc(user); }
+  if(user && !user.isAnonymous){ currentUser = user; delegateOwnerUid = null; await ensureUserDoc(user); }
 });
 </script>
 </body>
