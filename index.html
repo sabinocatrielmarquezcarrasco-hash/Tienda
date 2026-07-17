@@ -695,7 +695,6 @@
   <div class="stats-bar">
     <span id="stat-count">Cargando...</span>
     <span>· Modo: <strong id="stat-modo">Minorista</strong></span>
-    <span>· Margen aplicado: <strong id="stat-margen">+60%</strong></span>
   </div>
 </header>
 
@@ -906,7 +905,6 @@ function render() {
 
   document.getElementById('stat-count').textContent = `${data.length} productos`;
   document.getElementById('stat-modo').textContent = MODO_LABEL[modo];
-  document.getElementById('stat-margen').textContent = modo === 'min' ? '+60%' : modo === 'may' ? '+20%' : '+35%';
 
   if (!data.length) {
     grid.innerHTML = '';
@@ -917,7 +915,6 @@ function render() {
 
   grid.innerHTML = data.map(p => {
     const pr = precio(p);
-    const prMay = Math.round(p.price * MARGEN.may);
     const inCart = cart.find(c => c.id === p.id);
     return `
     <div class="card" onclick="openModal('${p.id}')">
@@ -930,7 +927,6 @@ function render() {
         <div class="card-name">${p.name}</div>
         ${modo === 'may' ? `<div class="card-bulto">x${p.bulto} por bulto</div>` : ''}
         <div class="card-price">$${pr.toLocaleString('es-AR')}</div>
-        ${modo !== 'may' ? `<div class="card-price-may">May: $${prMay.toLocaleString('es-AR')}</div>` : ''}
       </div>
       <div class="card-actions" onclick="event.stopPropagation()">
         <button class="btn-add" onclick="addCart('${p.id}')" style="${inCart?'background:#1aaa52':''}">
@@ -949,7 +945,6 @@ function openModal(id) {
   if (!p) return;
   const modo = getModo();
   const pr = precio(p);
-  const prMay = Math.round(p.price * MARGEN.may);
   document.getElementById('modal-content').innerHTML = `
     <h2>${p.name}</h2>
     <div class="modal-meta">Código: ${p.id} · Bulto: x${p.bulto}</div>
@@ -957,7 +952,7 @@ function openModal(id) {
       onerror="this.src='https://via.placeholder.com/400x200/1c1c28/888?text=Sin+Imagen'"></div>
     <div class="modal-meta">Precio ${MODO_LABEL[modo]}:</div>
     <div class="modal-price">$${pr.toLocaleString('es-AR')}</div>
-    <div class="modal-meta">Precio Mayorista: $${prMay.toLocaleString('es-AR')} · Bulto: x${p.bulto}</div>
+    <div class="modal-meta">Bulto: x${p.bulto}</div>
     <div class="modal-actions">
       <button class="btn-add" onclick="addCart('${p.id}');closeModal2()">+ Agregar al carrito</button>
       <button class="btn-wapp" onclick="wappProducto('${p.id}')">📱</button>
