@@ -549,8 +549,9 @@ function resellerInfo() {
 function resellerWaSuffix(sellerPrice) {
   const info = resellerInfo();
   if (!info) return '';
-  const basePrice = _origPrecio ? Math.round(sellerPrice / (1 + info.margin / 100)) : sellerPrice;
-  return `\n\n🤝 *Vendedor referente:* ${info.code} (+${info.margin}%)\n💵 Precio base (Sabino): $${basePrice.toLocaleString('es-AR')}\n💰 Precio vendedor: $${Math.round(sellerPrice).toLocaleString('es-AR')}`;
+  // No se muestra precio base ni margen acá: eso queda privado entre vos y el vendedor,
+  // el comprador no tiene por qué verlo en el mensaje de WhatsApp.
+  return `\n\n🤝 *Cód. vendedor:* ${info.code}`;
 }
 
 function resellerRenderBanner() {
@@ -558,7 +559,7 @@ function resellerRenderBanner() {
   const banner = document.getElementById('reseller-banner');
   if (!banner) return;
   if (!info) { banner.classList.remove('show'); return; }
-  banner.innerHTML = `🤝 Estás viendo esta tienda con precio de vendedor: <strong>${info.code}</strong> (+${info.margin}%)
+  banner.innerHTML = `🤝 Estás viendo esta tienda con precio de vendedor: <strong>${info.code}</strong>
     <button onclick="resellerClear()">✕ Quitar</button>`;
   banner.classList.add('show');
 }
@@ -594,4 +595,3 @@ function resellerInit() {
 
 // Se ejecuta apenas carga marketing.js (después de que ya existen precio(), render(), etc.)
 resellerInit();
-
